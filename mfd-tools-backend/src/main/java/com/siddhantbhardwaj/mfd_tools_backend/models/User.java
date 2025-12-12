@@ -16,39 +16,38 @@ public class User {
     private Long userId;
 
     @NotBlank
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "name")
     private String name;
 
-    @NotBlank
     @Column(name = "phone")
     private String phone;
 
-    @NotBlank
     @Column(name = "password")
     private String password;
 
     @Column(name = "arn")
     private Long arn;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(
+            name = "role_id",
+            referencedColumnName = "role_id"
     )
-
-    private Set<Role> roles = new HashSet<>();
+    private Role role;
 
     public User() {
     }
 
-    public User(Long userId, String name, String phone, String password, Long arn, Set<Role> roles) {
-        this.userId = userId;
+    public User(String email, String name, String phone, String password, Long arn, Role role) {
+        this.email = email;
         this.name = name;
         this.phone = phone;
         this.password = password;
         this.arn = arn;
-        this.roles = roles;
+        this.role = role;
     }
 
     public Long getUserId() {
@@ -57,6 +56,14 @@ public class User {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {
@@ -91,23 +98,24 @@ public class User {
         this.arn = arn;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "userId=" + userId +
+                ", email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +
                 ", password='" + password + '\'' +
                 ", arn=" + arn +
-                ", roles=" + roles +
+                ", role=" + role +
                 '}';
     }
 }
