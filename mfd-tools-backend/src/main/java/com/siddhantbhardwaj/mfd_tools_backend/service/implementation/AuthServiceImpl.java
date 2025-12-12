@@ -12,6 +12,7 @@ import com.siddhantbhardwaj.mfd_tools_backend.security.JwtService;
 import com.siddhantbhardwaj.mfd_tools_backend.security.UserInfoDetails;
 import com.siddhantbhardwaj.mfd_tools_backend.security.UserInfoDetailsService;
 import com.siddhantbhardwaj.mfd_tools_backend.service.blueprintservices.AuthService;
+import com.siddhantbhardwaj.mfd_tools_backend.utils.AESEncryptor;
 import com.siddhantbhardwaj.mfd_tools_backend.utils.events.MFDToolsEventListener;
 import com.siddhantbhardwaj.mfd_tools_backend.utils.events.MFDToolsEventPublisher;
 import org.slf4j.Logger;
@@ -21,7 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +49,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private AESEncryptor aesEncryptor;
 
     @Autowired
     private UserInfoDetailsService userInfoDetailsService;
@@ -131,16 +137,81 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Map<String, String> forgotPassword(String email) throws Exception {
-        return Map.of();
+        authServiceImplLogger.info("Entering {} method with input {}",Thread.currentThread().getStackTrace()[2].getMethodName(),email);
+        Map<String,String> forgotPasswordMap = new HashMap<>();
+        long currentTime = System.currentTimeMillis();
+        try{
+            Optional<User> userOptional = userRepository.findByEmail(email);
+            if(userOptional.isPresent()){
+                String forgotCode = aesEncryptor.encrypt(email + registrationDelimiter + String.valueOf(currentTime), secretKey);
+                Context context = new Context();
+                context.setVariable("heading", "Request To Reset Password");
+                context.setVariable("message", "A request was initiated " +
+                        "in order to reset your password for your email " + email);
+                context.setVariable("mainMsg", "Click to reset Password");
+                context.setVariable("adminLink", emailLinkHost + "resetPassword?uid=" + forgotCode);
+                context.setVariable("expiryTimeOut","1 Hour");
+                mfdToolsEventPublisher.publishEmailEvent(userOptional.get().getEmail(),"MFDTools.in : Passsword Reset Email","email_template.html",context);
+                forgotPasswordMap.put("status","success");
+            }else{
+                forgotPasswordMap.put("status","failure");
+            }
+        }catch (final Exception e){
+            authServiceImplLogger.error("Error occurred: {}",e);
+            e.printStackTrace();
+            throw e;
+        }
+        authServiceImplLogger.info("Returning from method {} with output {}",Thread.currentThread().getStackTrace()[2].getMethodName(),forgotPasswordMap);
+        return forgotPasswordMap;
     }
 
     @Override
     public Map<String, String> resetPassword(String uid, String password) throws Exception {
-        return Map.of();
+        authServiceImplLogger.info("Entering {} method with uid {} and password {}",Thread.currentThread().getStackTrace()[2].getMethodName(),uid,password);
+        Map<String,String> resetPasswordMap = new HashMap<>();
+        try{
+            String[] decryptedCode = aesEncryptor.decrypt(uid,secretKey).split(registrationDelimiter);
+            String email = decryptedCode[0];
+            long timeOfSubmission =  Long.parseLong(decryptedCode[1]);
+            long currentTime = System.currentTimeMillis();
+
+            if(currentTime > (timeOfSubmission + timeOut)){
+                resetPasswordMap.put("Error","Time Limit Exceeded !");
+            }
+            Optional<User> userOptional = userRepository.findByEmail(email);
+            if(userOptional.isPresent()){
+                User user = userOptional.get();
+                user.setPassword(password);
+                userInfoDetailsService.addUser(user);
+                resetPasswordMap.put("status","success");
+            }else{
+                resetPasswordMap.put("status","failure");
+            }
+        }catch (final Exception e){
+            authServiceImplLogger.error("Error occurred: {}",e);
+            e.printStackTrace();
+            throw e;
+        }
+        authServiceImplLogger.info("Returning from method {} with output {}",Thread.currentThread().getStackTrace()[2].getMethodName(),resetPasswordMap);
+        return resetPasswordMap;
     }
 
     @Override
     public Map<String, String> checkUserLoggedIn() throws Exception {
-        return Map.of();
+        authServiceImplLogger.info("Entering {} method",Thread.currentThread().getStackTrace()[2].getMethodName());
+        Map<String,String> checkUserLoggedInMap = new HashMap<>();
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if(authentication != null){
+                UserInfoDetails userInfoDetails = (UserInfoDetails) authentication.getPrincipal();
+                checkUserLoggedInMap.put("role",userInfoDetails.getAuthorities().iterator().next().getAuthority());
+            }
+        }catch (final Exception e){
+            authServiceImplLogger.error("Error occurred: {}",e);
+            e.printStackTrace();
+            throw e;
+        }
+        authServiceImplLogger.info("Returning from method {} with output {}",Thread.currentThread().getStackTrace()[2].getMethodName(),checkUserLoggedInMap);
+        return checkUserLoggedInMap;
     }
 }
