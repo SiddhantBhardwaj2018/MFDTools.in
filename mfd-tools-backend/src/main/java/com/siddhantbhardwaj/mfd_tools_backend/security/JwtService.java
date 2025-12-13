@@ -18,10 +18,10 @@ import java.util.function.Function;
 @Component
 public class JwtService {
 
-    @Value("${jwt.encryption.secretKey}")
+    @Value("${mfdtools.app.jwtSecret}")
     private String secretKey;
 
-    @Value("${jwt.encryption.expiryTime}")
+    @Value("${mfdtools.app.jwtExpirationMs}")
     private Integer expiryTime;
 
     public String generateToken(String username){
