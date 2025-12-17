@@ -3,7 +3,7 @@ package com.siddhantbhardwaj.mfd_tools_backend.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "role")
+@Table(name = "roles")
 public class Role {
 
     @Id
