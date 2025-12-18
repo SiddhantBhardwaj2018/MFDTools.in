@@ -113,6 +113,46 @@ export default function panel() {
             href: "/financial-health-quiz",
             label: "Financial Health Quiz",
           },
+           {
+            href: "/scheme-trends-analysis",
+            label: "Scheme Trends Analysis",
+          },
+          {
+            href: "/scheme-return-analysis",
+            label: "Scheme Return Analysis",
+          },
+           {
+            href: "/risk-metrics-analysis",
+            label: "Risk Metrics Analysis",
+          },
+          {
+            href: "/scheme-comparison-analysis",
+            label: "Scheme Comparison Analysis",
+          },
+           {
+            href: "/live-sip-return-analysis",
+            label: "Live SIP Return Analysis",
+          },
+            {
+            href: "/live-swp-return-analysis",
+            label: "Live SWP Return Analysis",
+          },
+            {
+            href: "/live-swp-return-analysis",
+            label: "Live SWP Return Analysis",
+          },
+           {
+            href: "/most-declining-scheme-analysis",
+            label: "Most Declining Scheme Analysis",
+          },
+          {
+            href: "/live-scheme-nav-tracker-analysis",
+            label: "Live Scheme NAV Tracker",
+          },
+           {
+            href: "/weekly-fund-tracker",
+            label: "Weekly Fund Tracker",
+          },
         ].map((item) => (
           <Link
             key={item.href}
