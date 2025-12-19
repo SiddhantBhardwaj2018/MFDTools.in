@@ -10,10 +10,10 @@ export default function panel() {
     const role = localStorage.getItem("role");
 
     if (role !== null) {
-      if (role === "ROLE_BASIC_USER") {
-        router.push("/panel");
-      } else if (role === "ROLE_STUDENT") {
-        router.push("/admin");
+      if (role !== "ROLE_BASIC_USER") {
+        if(role == "ROLE_ADMIN"){
+          router.push("/admin")
+        }
       }
     } else {
       router.push("/");
@@ -27,20 +27,54 @@ export default function panel() {
         style={{ marginLeft: "5%", marginRight: "5%" }}
       >
         {[
-          { href: "/education-planning", label: "Education Planning" },
-          { href: "/marriage-planning", label: "Marriage Planning" },
-          { href: "/vacation-planning", label: "Vacation Planning" },
-          { href: "/dream-car-planning", label: "Dream Car Planning" },
-          { href: "/house-planning", label: "House Planning" },
-          { href: "/business-planning", label: "Business Planning" },
-          { href: "/emergency-planning", label: "Emergency Planning" },
-          { href: "/retirement-planning", label: "Retirement Planning" },
-          { href: "/deferred-swp-planning", label: "Deferred SWP Calculator" },
+          { 
+              href: "/education-planning", 
+              label: "Education Planning" 
+          },
+          { 
+              href: "/marriage-planning", 
+              label: "Marriage Planning" 
+          },
+          {   
+              href: "/vacation-planning", 
+              label: "Vacation Planning" 
+          },
+          {   
+              href: "/dream-car-planning", 
+              label: "Dream Car Planning" 
+          },
+          {   
+              href: "/house-planning", 
+              label: "House Planning" 
+          },
+          {   
+              href: "/business-planning", 
+              label: "Business Planning" 
+          },
+          {   
+              href: "/emergency-planning", 
+              label: "Emergency Planning" 
+          },
+          { 
+              href: "/retirement-planning", 
+              label: "Retirement Planning" 
+          },
+          {   
+              href: "/deferred-swp-planning", 
+              label: "Deferred SWP Calculator" 
+          },
+          {
+            href: "/immediate-swp-planning",
+            label: "Immediate SWP Calculator",
+          },
           {
             href: "/portfolio-forecasting-calculator",
             label: "Portfolio Forecasting Calculator",
           },
-          { href: "/emi-vs-sip-calculator", label: "Loan EMI vs SIP" },
+          { 
+            href: "/emi-vs-sip-calculator", 
+            label: "Loan EMI vs SIP" 
+          },
           {
             href: "/sip-to-crorepati-calculator",
             label: "Target SIP To Become A Crorepati",
@@ -86,6 +120,10 @@ export default function panel() {
             label: "SIP Calculator (With Inflation)",
           },
           {
+            href: "/step-up-sip-calculator-inflation",
+            label: "Step Up SIP Calculator (With Inflation)",
+          },
+          {
             href: "/lumpsum-calculator-inflation",
             label: "Lumpsum Calculator (With Inflation)",
           },
@@ -106,6 +144,22 @@ export default function panel() {
             label: "Step Up SIP Calculator (Percent With Inflation)",
           },
           {
+            href: "/sip-brokerage-calculator",
+            label: "Brokerage Calculation - SIP Business",
+          },
+          {
+            href: "/brokerage-comparison-mf-vs-insurance",
+            label: "Brokerage Comparison - MF vs Insurance",
+          },
+          {
+            href: "/total-commission-sip-book-aum",
+            label: "Total Commission For SIP Book Size & AUM",
+          },
+          {
+            href: "/total-commission-aum",
+            label: "Total Commission For AUM",
+          },
+          {
             href: "/risk-profiler-quiz",
             label: "Investor Risk Profiler",
           },
@@ -113,7 +167,7 @@ export default function panel() {
             href: "/financial-health-quiz",
             label: "Financial Health Quiz",
           },
-           {
+          {
             href: "/scheme-trends-analysis",
             label: "Scheme Trends Analysis",
           },
@@ -121,7 +175,7 @@ export default function panel() {
             href: "/scheme-return-analysis",
             label: "Scheme Return Analysis",
           },
-           {
+          {
             href: "/risk-metrics-analysis",
             label: "Risk Metrics Analysis",
           },
@@ -129,19 +183,15 @@ export default function panel() {
             href: "/scheme-comparison-analysis",
             label: "Scheme Comparison Analysis",
           },
-           {
+          {
             href: "/live-sip-return-analysis",
             label: "Live SIP Return Analysis",
           },
-            {
+          {
             href: "/live-swp-return-analysis",
             label: "Live SWP Return Analysis",
           },
-            {
-            href: "/live-swp-return-analysis",
-            label: "Live SWP Return Analysis",
-          },
-           {
+          {
             href: "/most-declining-scheme-analysis",
             label: "Most Declining Scheme Analysis",
           },
@@ -149,7 +199,7 @@ export default function panel() {
             href: "/live-scheme-nav-tracker-analysis",
             label: "Live Scheme NAV Tracker",
           },
-           {
+          {
             href: "/weekly-fund-tracker",
             label: "Weekly Fund Tracker",
           },
