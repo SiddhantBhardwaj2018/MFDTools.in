@@ -5,53 +5,36 @@ import mfToolsService from "../../helpers/mfTools";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
 
-export default function educationPlanning() {
+export default function vacationPlanning() {
   const router = useRouter();
 
   const { logout } = useContext(AuthContext);
 
-  const [childAge, setChildAge] = useState("");
-  const [educationCost, setEducationCost] = useState("");
+  const [vacationYr, setVacationYr] = useState("");
+  const [vacationCost, setVacationCost] = useState("");
   const [returnRate, setReturnRate] = useState("");
-  const [collegeAge, setCollegeAge] = useState("");
   const [currentInvestmentAmt, setCurrentInvestmentAmt] = useState("");
   const [inflationRate, setInflationRate] = useState("");
 
-  const [childEducationFutureCost,setChildEducationFutureCost] = useState("");
-  const [investmentAppreciation,setInvestmentAppreciation] = useState("");
-  const [deficitCorpus,setDeficitCorpus] = useState("");
-  const [lumpsumFundingReqd,setLumpsumFundingReqd] = useState("");
-  const [monthlyInvestmentReqd,setMonthlyInvestmentReqd] = useState("");
+  const [vacationFutureCost, setVacationFutureCost] = useState("");
+  const [investmentAppreciation, setInvestmentAppreciation] = useState("");
+  const [deficitCorpus, setDeficitCorpus] = useState("");
+  const [lumpsumFundingReqd, setLumpsumFundingReqd] = useState("");
+  const [monthlyInvestmentReqd, setMonthlyInvestmentReqd] = useState("");
 
-  const [displayResult,setDisplayResult] = useState("none");
- 
-  const onChangeChildAge = (e) => {
+  const [displayResult, setDisplayResult] = useState("none");
+
+  const onChangeVacationYr = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setChildAge(
-        inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
-          e.target.value
-        )
-      );
+      setVacationYr(e.target.value);
     } else {
       window.alert("failure");
     }
   };
 
-  const onChangeCollegeAge = (e) => {
+  const onChangeVacationCost = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setCollegeAge(
-        inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
-          e.target.value
-        )
-      );
-    } else {
-      window.alert("failure");
-    }
-  };
-
-  const onChangeEducationCost = (e) => {
-    if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setEducationCost(
+      setVacationCost(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -100,35 +83,43 @@ export default function educationPlanning() {
   const onSubmitGoalInvestPlan = (e) => {
     e.preventDefault();
     if (
-      childAge.length > 0 &&
-      educationCost.length > 0 &&
-      collegeAge.length > 0 &&
+      vacationYr.length > 0 &&
+      vacationCost.length > 0 &&
       returnRate.length > 0 &&
       currentInvestmentAmt.length > 0 &&
       inflationRate.length > 0 &&
-      inputCalculatorRules.numericRegex.test(childAge) &&
-      inputCalculatorRules.numericRegex.test(educationCost) &&
-      inputCalculatorRules.numericRegex.test(collegeAge) &&
+      inputCalculatorRules.numericRegex.test(vacationYr) &&
+      inputCalculatorRules.numericRegex.test(vacationCost) &&
       inputCalculatorRules.numericRegex.test(returnRate) &&
       inputCalculatorRules.numericRegex.test(currentInvestmentAmt) &&
       inputCalculatorRules.numericRegex.test(inflationRate)
     ) {
       mfToolsService
         .calculateGoalInvestPlan(
-          Number(childAge.replace(/,/g, "")),
-          Number(collegeAge.replace(/,/g, "")),
-          Number(educationCost.replace(/,/g, "")),
+          new Date().getFullYear(),
+          Number(vacationYr.replace(/,/g, "")),
+          Number(vacationCost.replace(/,/g, "")),
           Number(returnRate.replace(/,/g, "")) / 100,
           Number(inflationRate.replace(/,/g, "")) / 100,
           Number(currentInvestmentAmt.replace(/,/g, ""))
         )
         .then((res) => {
           console.log(res.data);
-          setChildEducationFutureCost(inputCalculatorRules.formatINR(res.data.futureCost));
-          setInvestmentAppreciation(inputCalculatorRules.formatINR(res.data.investAppAmt));
-          setDeficitCorpus(inputCalculatorRules.formatINR(res.data.deficitCorpus));
-          setLumpsumFundingReqd(inputCalculatorRules.formatINR(res.data.lumpsumAmt));
-          setMonthlyInvestmentReqd(inputCalculatorRules.formatINR(res.data.monthlyInvestReqd));
+          setVacationFutureCost(
+            inputCalculatorRules.formatINR(res.data.futureCost)
+          );
+          setInvestmentAppreciation(
+            inputCalculatorRules.formatINR(res.data.investAppAmt)
+          );
+          setDeficitCorpus(
+            inputCalculatorRules.formatINR(res.data.deficitCorpus)
+          );
+          setLumpsumFundingReqd(
+            inputCalculatorRules.formatINR(res.data.lumpsumAmt)
+          );
+          setMonthlyInvestmentReqd(
+            inputCalculatorRules.formatINR(res.data.monthlyInvestReqd)
+          );
           setDisplayResult("block");
         })
         .catch((err) => {
@@ -159,53 +150,35 @@ export default function educationPlanning() {
       router.push("/");
     }
   }, []);
+
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Education Planning
+        Vacation Planning
       </h1>
       <div style={{ margin: "0 8%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Current Age */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current Age of Child (Years)
+              Which Year Would You Like to Vacation in ?
             </label>
             <input
-              value={childAge}
-              onChange={onChangeChildAge}
+              value={vacationYr}
+              onChange={onChangeVacationYr}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 5"
+              placeholder="e.g. 2025"
             />
           </div>
-
-          {/* College Age */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              College-Going Age (Years)
+              Current Cost of Vacation (₹)
             </label>
             <input
-              value={collegeAge}
-              onChange={onChangeCollegeAge}
-              type="text"
-              min="0"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                       focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 18"
-            />
-          </div>
-
-          {/* Current Education Cost */}
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current Cost of Education (₹)
-            </label>
-            <input
-              value={educationCost}
-              onChange={onChangeEducationCost}
+              value={vacationCost}
+              onChange={onChangeVacationCost}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -213,8 +186,6 @@ export default function educationPlanning() {
               placeholder="e.g. 5,00,000"
             />
           </div>
-
-          {/* Current Investment */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Current Amount You Can Invest (₹)
@@ -229,8 +200,6 @@ export default function educationPlanning() {
               placeholder="e.g. 1,00,000"
             />
           </div>
-
-          {/* Expected Return */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Expected Rate of Return (%)
@@ -245,8 +214,6 @@ export default function educationPlanning() {
               placeholder="e.g. 12"
             />
           </div>
-
-          {/* Inflation */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Expected Inflation Rate (%)
@@ -261,8 +228,6 @@ export default function educationPlanning() {
               placeholder="e.g. 6"
             />
           </div>
-
-          {/* Submit */}
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="submit"
@@ -271,17 +236,17 @@ export default function educationPlanning() {
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
             >
-              Calculate Education Corpus
+              Calculate Vacation Corpus
             </button>
           </div>
         </form>
-        <div id="dataTable" style={{display:displayResult}}>
+        <div id="dataTable" style={{ display: displayResult }}>
           <div
             id="resultHeader"
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-10 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Educational Planning Details
+              Vacation Planning Details
             </h5>
           </div>
 
@@ -294,10 +259,10 @@ export default function educationPlanning() {
                 <thead className="text-md text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Future Cost Of Child&apos;s Education
+                      Future Cost Of Dream Vacation
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {childEducationFutureCost}
+                      {vacationFutureCost}
                     </th>
                   </tr>
 

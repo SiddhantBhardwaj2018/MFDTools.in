@@ -5,19 +5,19 @@ import mfToolsService from "../../helpers/mfTools";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
 
-export default function educationPlanning() {
+export default function marriagePlanning() {
   const router = useRouter();
 
   const { logout } = useContext(AuthContext);
 
-  const [childAge, setChildAge] = useState("");
-  const [educationCost, setEducationCost] = useState("");
+  const [currentAge, setCurrentAge] = useState("");
+  const [houseCost, setHouseCost] = useState("");
   const [returnRate, setReturnRate] = useState("");
-  const [collegeAge, setCollegeAge] = useState("");
+  const [houseAge, setHouseAge] = useState("");
   const [currentInvestmentAmt, setCurrentInvestmentAmt] = useState("");
   const [inflationRate, setInflationRate] = useState("");
 
-  const [childEducationFutureCost,setChildEducationFutureCost] = useState("");
+  const [houseFutureCost,setHouseFutureCost] = useState("");
   const [investmentAppreciation,setInvestmentAppreciation] = useState("");
   const [deficitCorpus,setDeficitCorpus] = useState("");
   const [lumpsumFundingReqd,setLumpsumFundingReqd] = useState("");
@@ -25,9 +25,9 @@ export default function educationPlanning() {
 
   const [displayResult,setDisplayResult] = useState("none");
  
-  const onChangeChildAge = (e) => {
+  const onChangeCurrentAge = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setChildAge(
+      setCurrentAge(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -37,9 +37,9 @@ export default function educationPlanning() {
     }
   };
 
-  const onChangeCollegeAge = (e) => {
+  const onChangeHouseAge = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setCollegeAge(
+      setHouseAge(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -49,9 +49,9 @@ export default function educationPlanning() {
     }
   };
 
-  const onChangeEducationCost = (e) => {
+  const onChangeHouseCost = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setEducationCost(
+      setHouseCost(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -100,31 +100,31 @@ export default function educationPlanning() {
   const onSubmitGoalInvestPlan = (e) => {
     e.preventDefault();
     if (
-      childAge.length > 0 &&
-      educationCost.length > 0 &&
-      collegeAge.length > 0 &&
+      currentAge.length > 0 &&
+      houseCost.length > 0 &&
+      houseAge.length > 0 &&
       returnRate.length > 0 &&
       currentInvestmentAmt.length > 0 &&
       inflationRate.length > 0 &&
-      inputCalculatorRules.numericRegex.test(childAge) &&
-      inputCalculatorRules.numericRegex.test(educationCost) &&
-      inputCalculatorRules.numericRegex.test(collegeAge) &&
+      inputCalculatorRules.numericRegex.test(currentAge) &&
+      inputCalculatorRules.numericRegex.test(houseCost) &&
+      inputCalculatorRules.numericRegex.test(houseAge) &&
       inputCalculatorRules.numericRegex.test(returnRate) &&
       inputCalculatorRules.numericRegex.test(currentInvestmentAmt) &&
       inputCalculatorRules.numericRegex.test(inflationRate)
     ) {
       mfToolsService
         .calculateGoalInvestPlan(
-          Number(childAge.replace(/,/g, "")),
-          Number(collegeAge.replace(/,/g, "")),
-          Number(educationCost.replace(/,/g, "")),
+          Number(currentAge.replace(/,/g, "")),
+          Number(houseAge.replace(/,/g, "")),
+          Number(houseCost.replace(/,/g, "")),
           Number(returnRate.replace(/,/g, "")) / 100,
           Number(inflationRate.replace(/,/g, "")) / 100,
           Number(currentInvestmentAmt.replace(/,/g, ""))
         )
         .then((res) => {
           console.log(res.data);
-          setChildEducationFutureCost(inputCalculatorRules.formatINR(res.data.futureCost));
+          setHouseFutureCost(inputCalculatorRules.formatINR(res.data.futureCost));
           setInvestmentAppreciation(inputCalculatorRules.formatINR(res.data.investAppAmt));
           setDeficitCorpus(inputCalculatorRules.formatINR(res.data.deficitCorpus));
           setLumpsumFundingReqd(inputCalculatorRules.formatINR(res.data.lumpsumAmt));
@@ -159,21 +159,21 @@ export default function educationPlanning() {
       router.push("/");
     }
   }, []);
+  
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Education Planning
+        House Planning
       </h1>
       <div style={{ margin: "0 8%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Current Age */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current Age of Child (Years)
+              Current Age (Years)
             </label>
             <input
-              value={childAge}
-              onChange={onChangeChildAge}
+              value={currentAge}
+              onChange={onChangeCurrentAge}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -181,15 +181,13 @@ export default function educationPlanning() {
               placeholder="e.g. 5"
             />
           </div>
-
-          {/* College Age */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              College-Going Age (Years)
+              Expected Age Of Purchasing House (Years)
             </label>
             <input
-              value={collegeAge}
-              onChange={onChangeCollegeAge}
+              value={houseAge}
+              onChange={onChangeHouseAge}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -197,15 +195,13 @@ export default function educationPlanning() {
               placeholder="e.g. 18"
             />
           </div>
-
-          {/* Current Education Cost */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current Cost of Education (₹)
+              Current Cost of House (₹)
             </label>
             <input
-              value={educationCost}
-              onChange={onChangeEducationCost}
+              value={houseCost}
+              onChange={onChangeHouseCost}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -213,8 +209,6 @@ export default function educationPlanning() {
               placeholder="e.g. 5,00,000"
             />
           </div>
-
-          {/* Current Investment */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Current Amount You Can Invest (₹)
@@ -229,8 +223,6 @@ export default function educationPlanning() {
               placeholder="e.g. 1,00,000"
             />
           </div>
-
-          {/* Expected Return */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Expected Rate of Return (%)
@@ -245,8 +237,6 @@ export default function educationPlanning() {
               placeholder="e.g. 12"
             />
           </div>
-
-          {/* Inflation */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Expected Inflation Rate (%)
@@ -261,8 +251,6 @@ export default function educationPlanning() {
               placeholder="e.g. 6"
             />
           </div>
-
-          {/* Submit */}
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="submit"
@@ -271,7 +259,7 @@ export default function educationPlanning() {
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
             >
-              Calculate Education Corpus
+              Calculate House Corpus
             </button>
           </div>
         </form>
@@ -281,7 +269,7 @@ export default function educationPlanning() {
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-10 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Educational Planning Details
+              House Planning Details
             </h5>
           </div>
 
@@ -294,10 +282,10 @@ export default function educationPlanning() {
                 <thead className="text-md text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Future Cost Of Child&apos;s Education
+                      Future Cost Of House
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {childEducationFutureCost}
+                      {houseFutureCost}
                     </th>
                   </tr>
 

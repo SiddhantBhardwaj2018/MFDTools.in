@@ -25,9 +25,15 @@ const modifyNumberValueForLocaleRepresentation = (value) => {
   return formattedInteger;
 };
 
+const formatINR = (num) => {
+  return '₹' + num.toLocaleString("en-IN");
+};
+
+
 const numericRegex = /^[\d,]*\.?\d*$/;
 
 export default {
     modifyNumberValueForLocaleRepresentation,
-    numericRegex
+    numericRegex,
+    formatINR
 }

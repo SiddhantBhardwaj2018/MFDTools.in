@@ -5,29 +5,29 @@ import mfToolsService from "../../helpers/mfTools";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
 
-export default function educationPlanning() {
+export default function businessPlanning() {
   const router = useRouter();
 
   const { logout } = useContext(AuthContext);
 
-  const [childAge, setChildAge] = useState("");
-  const [educationCost, setEducationCost] = useState("");
-  const [returnRate, setReturnRate] = useState("");
-  const [collegeAge, setCollegeAge] = useState("");
-  const [currentInvestmentAmt, setCurrentInvestmentAmt] = useState("");
-  const [inflationRate, setInflationRate] = useState("");
+  const [currentAge, setCurrentAge] = useState("");
+  const [retirementAge, setRetirementAge] = useState("");
+  const [currentSIPInvestment, setCurrentSIPInvestment] = useState("");
+  const [currentLumpsumInvestment, setCurrentLumpsumInvestment] = useState("");
+  const [portfolioGrowthRate, setPortfolioGrowthRate] =
+    useState("");
+  const [swpRate, setSwpRate] =
+    useState("");
 
-  const [childEducationFutureCost,setChildEducationFutureCost] = useState("");
-  const [investmentAppreciation,setInvestmentAppreciation] = useState("");
-  const [deficitCorpus,setDeficitCorpus] = useState("");
-  const [lumpsumFundingReqd,setLumpsumFundingReqd] = useState("");
-  const [monthlyInvestmentReqd,setMonthlyInvestmentReqd] = useState("");
+  const [retirementFutureCorpus, setRetirementFutureCorpus] = useState("");
+  const [monthlyInvestmentReqd, setMonthlyInvestmentReqd] = useState("");
+  const [monthlySIPRetirement, setMonthlySIPRetirement] = useState("");
 
-  const [displayResult,setDisplayResult] = useState("none");
- 
-  const onChangeChildAge = (e) => {
+  const [displayResult, setDisplayResult] = useState("none");
+
+  const onChangeCurrentAge = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setChildAge(
+      setCurrentAge(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -37,9 +37,9 @@ export default function educationPlanning() {
     }
   };
 
-  const onChangeCollegeAge = (e) => {
+  const onChangeRetirementAge = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setCollegeAge(
+      setRetirementAge(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -49,9 +49,9 @@ export default function educationPlanning() {
     }
   };
 
-  const onChangeEducationCost = (e) => {
+  const onChangeLifeExpectancy = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setEducationCost(
+      setLifeExpectancy(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -61,9 +61,9 @@ export default function educationPlanning() {
     }
   };
 
-  const onChangeReturnRate = (e) => {
+  const onChangeCurrentMonthlyExpense = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setReturnRate(
+      setCurrentMonthlyExpense(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -73,9 +73,21 @@ export default function educationPlanning() {
     }
   };
 
-  const onChangeCurrentInvestmentAmount = (e) => {
+  const onChangePreRetirementCorpusReturn = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setCurrentInvestmentAmt(
+      setPreRetirementCorpusReturn(
+        inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
+          e.target.value
+        )
+      );
+    } else {
+      window.alert("failure");
+    }
+  };
+
+  const onChangePostRetirementCorpusReturn = (e) => {
+    if (inputCalculatorRules.numericRegex.test(e.target.value)) {
+      setPostRetirementCorpusReturn(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -100,35 +112,42 @@ export default function educationPlanning() {
   const onSubmitGoalInvestPlan = (e) => {
     e.preventDefault();
     if (
-      childAge.length > 0 &&
-      educationCost.length > 0 &&
-      collegeAge.length > 0 &&
-      returnRate.length > 0 &&
-      currentInvestmentAmt.length > 0 &&
+      currentAge.length > 0 &&
+      lifeExpectancy.length > 0 &&
+      retirementAge.length > 0 &&
+      currentMonthlyExpense.length > 0 &&
+      preRetirementCorpusReturn.length > 0 &&
+      postRetirementCorpusReturn.length > 0 &&
       inflationRate.length > 0 &&
-      inputCalculatorRules.numericRegex.test(childAge) &&
-      inputCalculatorRules.numericRegex.test(educationCost) &&
-      inputCalculatorRules.numericRegex.test(collegeAge) &&
-      inputCalculatorRules.numericRegex.test(returnRate) &&
-      inputCalculatorRules.numericRegex.test(currentInvestmentAmt) &&
+      inputCalculatorRules.numericRegex.test(currentAge) &&
+      inputCalculatorRules.numericRegex.test(lifeExpectancy) &&
+      inputCalculatorRules.numericRegex.test(retirementAge) &&
+      inputCalculatorRules.numericRegex.test(currentMonthlyExpense) &&
+      inputCalculatorRules.numericRegex.test(preRetirementCorpusReturn) &&
+      inputCalculatorRules.numericRegex.test(postRetirementCorpusReturn) &&
       inputCalculatorRules.numericRegex.test(inflationRate)
     ) {
       mfToolsService
-        .calculateGoalInvestPlan(
-          Number(childAge.replace(/,/g, "")),
-          Number(collegeAge.replace(/,/g, "")),
-          Number(educationCost.replace(/,/g, "")),
-          Number(returnRate.replace(/,/g, "")) / 100,
-          Number(inflationRate.replace(/,/g, "")) / 100,
-          Number(currentInvestmentAmt.replace(/,/g, ""))
+        .calculateRetirementPlan(
+          Number(currentAge.replace(/,/g, "")),
+          Number(retirementAge.replace(/,/g, "")),
+          Number(lifeExpectancy.replace(/,/g, "")),
+          Number(currentMonthlyExpense.replace(/,/g, "")),
+          Number(preRetirementCorpusReturn.replace(/,/g, "")) / 100,
+          Number(postRetirementCorpusReturn.replace(/,/g, "")) / 100,
+          Number(inflationRate.replace(/,/g, "")) / 100
         )
         .then((res) => {
           console.log(res.data);
-          setChildEducationFutureCost(inputCalculatorRules.formatINR(res.data.futureCost));
-          setInvestmentAppreciation(inputCalculatorRules.formatINR(res.data.investAppAmt));
-          setDeficitCorpus(inputCalculatorRules.formatINR(res.data.deficitCorpus));
-          setLumpsumFundingReqd(inputCalculatorRules.formatINR(res.data.lumpsumAmt));
-          setMonthlyInvestmentReqd(inputCalculatorRules.formatINR(res.data.monthlyInvestReqd));
+          setMonthlyInvestmentReqd(
+            inputCalculatorRules.formatINR(res.data.monthlyRequirementAtRetirement)
+          );
+          setRetirementFutureCorpus(
+            inputCalculatorRules.formatINR(res.data.corpusAtRetirement)
+          );
+          setMonthlySIPRetirement(
+            inputCalculatorRules.formatINR(res.data.monthlySIPAmtForInvestment)
+          )
           setDisplayResult("block");
         })
         .catch((err) => {
@@ -159,21 +178,21 @@ export default function educationPlanning() {
       router.push("/");
     }
   }, []);
+
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Education Planning
+        Deferred SWP Calculator
       </h1>
       <div style={{ margin: "0 8%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Current Age */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current Age of Child (Years)
+              Current Age (Years)
             </label>
             <input
-              value={childAge}
-              onChange={onChangeChildAge}
+              value={currentAge}
+              onChange={onChangeCurrentAge}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -181,15 +200,13 @@ export default function educationPlanning() {
               placeholder="e.g. 5"
             />
           </div>
-
-          {/* College Age */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              College-Going Age (Years)
+              Retirement Age (Years)
             </label>
             <input
-              value={collegeAge}
-              onChange={onChangeCollegeAge}
+              value={retirementAge}
+              onChange={onChangeRetirementAge}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -197,15 +214,27 @@ export default function educationPlanning() {
               placeholder="e.g. 18"
             />
           </div>
-
-          {/* Current Education Cost */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current Cost of Education (₹)
+              Life Expectancy (Years)
             </label>
             <input
-              value={educationCost}
-              onChange={onChangeEducationCost}
+              value={lifeExpectancy}
+              onChange={onChangeLifeExpectancy}
+              type="text"
+              min="0"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                       focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="e.g. 18"
+            />
+          </div>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Current Monthly Expense (₹)
+            </label>
+            <input
+              value={currentMonthlyExpense}
+              onChange={onChangeCurrentMonthlyExpense}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -213,15 +242,13 @@ export default function educationPlanning() {
               placeholder="e.g. 5,00,000"
             />
           </div>
-
-          {/* Current Investment */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current Amount You Can Invest (₹)
+              Pre-Retirement Corpus Return (%)
             </label>
             <input
-              value={currentInvestmentAmt}
-              onChange={onChangeCurrentInvestmentAmount}
+              value={preRetirementCorpusReturn}
+              onChange={onChangePreRetirementCorpusReturn}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -229,15 +256,13 @@ export default function educationPlanning() {
               placeholder="e.g. 1,00,000"
             />
           </div>
-
-          {/* Expected Return */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Expected Rate of Return (%)
+              Post-Retirement Corpus Return (%)
             </label>
             <input
-              value={returnRate}
-              onChange={onChangeReturnRate}
+              value={postRetirementCorpusReturn}
+              onChange={onChangePostRetirementCorpusReturn}
               type="text"
               step="0.1"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -245,8 +270,6 @@ export default function educationPlanning() {
               placeholder="e.g. 12"
             />
           </div>
-
-          {/* Inflation */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Expected Inflation Rate (%)
@@ -261,8 +284,6 @@ export default function educationPlanning() {
               placeholder="e.g. 6"
             />
           </div>
-
-          {/* Submit */}
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="submit"
@@ -271,17 +292,17 @@ export default function educationPlanning() {
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
             >
-              Calculate Education Corpus
+              Calculate Retirement Corpus
             </button>
           </div>
         </form>
-        <div id="dataTable" style={{display:displayResult}}>
+        <div id="dataTable" style={{ display: displayResult }}>
           <div
             id="resultHeader"
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-10 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Educational Planning Details
+              Retirement Planning Details
             </h5>
           </div>
 
@@ -294,46 +315,28 @@ export default function educationPlanning() {
                 <thead className="text-md text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Future Cost Of Child&apos;s Education
+                      Future Corpus Requirements For Retirement
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {childEducationFutureCost}
+                      {retirementFutureCorpus}
                     </th>
                   </tr>
 
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Appreciation Of Investments Made Today
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      {investmentAppreciation}
-                    </th>
-                  </tr>
-
-                  <tr>
-                    <th scope="col" className="px-6 py-3">
-                      Deficit Corpus
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      {deficitCorpus}
-                    </th>
-                  </tr>
-
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-red-500">
-                      Lumpsum Funding Required
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      {lumpsumFundingReqd}
-                    </th>
-                  </tr>
-
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-red-500">
-                      Monthly Investment Required
+                      Monthly Expenses After Retirement
                     </th>
                     <th scope="col" className="px-6 py-3">
                       {monthlyInvestmentReqd}
+                    </th>
+                  </tr>
+
+                  <tr>
+                    <th scope="col" className="px-6 py-3">
+                      Monthly SIP To Reach Retirement Corpus
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      {monthlySIPRetirement}
                     </th>
                   </tr>
                 </thead>
