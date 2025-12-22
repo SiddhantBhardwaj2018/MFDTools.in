@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
 export default function panel() {
   const router = useRouter();
+  const { checkUserLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
+    checkUserLoggedIn();
     const role = localStorage.getItem("role");
-
     if (role !== null) {
       if (role !== "ROLE_BASIC_USER") {
         if(role == "ROLE_ADMIN"){
@@ -19,6 +20,7 @@ export default function panel() {
       router.push("/");
     }
   }, []);
+  
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">Panel</h1>

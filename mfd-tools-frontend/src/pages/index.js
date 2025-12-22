@@ -19,10 +19,11 @@ const geistMono = Geist_Mono({
 export default function Home() {
   const router = useRouter();
 
+  const { checkUserLoggedIn } = useContext(AuthContext);
+
   useEffect(() => {
-
+    checkUserLoggedIn();
     const role = localStorage.getItem("role");
-
     if (role !== null) {
       if (role === "ROLE_BASIC_USER") {
         router.push("/panel");

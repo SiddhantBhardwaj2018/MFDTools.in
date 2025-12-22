@@ -8,7 +8,7 @@ import { useContext } from "react";
 export default function educationPlanning() {
   const router = useRouter();
 
-  const { logout } = useContext(AuthContext);
+  const { checkUserLoggedIn, logout } = useContext(AuthContext);
 
   const [childAge, setChildAge] = useState("");
   const [educationCost, setEducationCost] = useState("");
@@ -147,18 +147,19 @@ export default function educationPlanning() {
   };
 
   useEffect(() => {
+    checkUserLoggedIn();
     const role = localStorage.getItem("role");
-
     if (role !== null) {
       if (role !== "ROLE_BASIC_USER") {
-        if (role == "ROLE_ADMIN") {
-          router.push("/admin");
+        if(role == "ROLE_ADMIN"){
+          router.push("/admin")
         }
       }
     } else {
       router.push("/");
     }
   }, []);
+
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">

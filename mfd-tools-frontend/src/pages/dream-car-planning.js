@@ -8,7 +8,7 @@ import { useContext } from "react";
 export default function dreamCarPlanning() {
   const router = useRouter();
 
-  const { logout } = useContext(AuthContext);
+  const { checkUserLoggedIn, logout } = useContext(AuthContext);
 
   const [currentAge, setCurrentAge] = useState("");
   const [dreamCarCost, setDreamCarCost] = useState("");
@@ -147,12 +147,12 @@ export default function dreamCarPlanning() {
   };
 
   useEffect(() => {
+    checkUserLoggedIn();
     const role = localStorage.getItem("role");
-
     if (role !== null) {
       if (role !== "ROLE_BASIC_USER") {
-        if (role == "ROLE_ADMIN") {
-          router.push("/admin");
+        if(role == "ROLE_ADMIN"){
+          router.push("/admin")
         }
       }
     } else {

@@ -10,21 +10,19 @@ export default function businessPlanning() {
 
   const { checkUserLoggedIn, logout } = useContext(AuthContext);
 
-  const [currentAge, setCurrentAge] = useState("");
-  const [retirementAge, setRetirementAge] = useState("");
-  const [currentSIPInvestment, setCurrentSIPInvestment] = useState("");
-  const [currentLumpsumInvestment, setCurrentLumpsumInvestment] = useState("");
-  const [portfolioGrowthRate, setPortfolioGrowthRate] = useState("");
-  const [swpRate, setSwpRate] = useState("");
-
   const [retirementCorpus, setRetirementCorpus] = useState("");
-  const [swpAmtAfterRetirement, setSwpAmtAfterRetirement] = useState("");
+  const [investGrowthRate, setInvestGrowthRate] = useState("");
+  const [swpReturnRate, setSwpReturnRate] = useState("");
+  const [corpusLeft, setCorpusLeft] = useState("");
+
+  const [swpAmt, setSwpAmt] = useState("");
+  const [maturityCorpusAmt, setMaturityCorpusAmt] = useState("");
 
   const [displayResult, setDisplayResult] = useState("none");
 
-  const onChangeCurrentAge = (e) => {
+  const onChangeRetirementCorpus = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setCurrentAge(
+      setRetirementCorpus(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -34,9 +32,9 @@ export default function businessPlanning() {
     }
   };
 
-  const onChangeRetirementAge = (e) => {
+  const onChangeInvestGrowthRate = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setRetirementAge(
+      setInvestGrowthRate(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -46,9 +44,9 @@ export default function businessPlanning() {
     }
   };
 
-  const onChangeCurrentSIPInvestment = (e) => {
+  const onChangeSwpReturnRate = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setCurrentSIPInvestment(
+      setSwpReturnRate(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -58,9 +56,9 @@ export default function businessPlanning() {
     }
   };
 
-  const onChangeCurrentLumpsumInvestment = (e) => {
+  const onChangeCorpusLeft = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setCurrentLumpsumInvestment(
+      setCorpusLeft(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -70,62 +68,33 @@ export default function businessPlanning() {
     }
   };
 
-  const onChangePortfolioGrowthRate = (e) => {
-    if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setPortfolioGrowthRate(
-        inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
-          e.target.value
-        )
-      );
-    } else {
-      window.alert("failure");
-    }
-  };
 
-  const onChangeSWPRate = (e) => {
-    if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setSwpRate(
-        inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
-          e.target.value
-        )
-      );
-    } else {
-      window.alert("failure");
-    }
-  };
-
-  const onSubmitDeferredSWPPlan = (e) => {
+  const onSubmitImmediateSWPPlan = (e) => {
     e.preventDefault();
     if (
-      currentAge.length > 0 &&
-      retirementAge.length > 0 &&
-      currentSIPInvestment.length > 0 &&
-      currentLumpsumInvestment.length > 0 &&
-      portfolioGrowthRate.length > 0 &&
-      swpRate.length > 0 &&
-      inputCalculatorRules.numericRegex.test(currentAge) &&
-      inputCalculatorRules.numericRegex.test(retirementAge) &&
-      inputCalculatorRules.numericRegex.test(currentSIPInvestment) &&
-      inputCalculatorRules.numericRegex.test(currentLumpsumInvestment) &&
-      inputCalculatorRules.numericRegex.test(portfolioGrowthRate) &&
-      inputCalculatorRules.numericRegex.test(swpRate)
+      retirementCorpus.length > 0 &&
+      investGrowthRate.length > 0 &&
+      swpReturnRate.length > 0 &&
+      corpusLeft.length > 0 &&
+      inputCalculatorRules.numericRegex.test(retirementCorpus) &&
+      inputCalculatorRules.numericRegex.test(investGrowthRate) &&
+      inputCalculatorRules.numericRegex.test(swpReturnRate) &&
+      inputCalculatorRules.numericRegex.test(corpusLeft)
     ) {
       mfToolsService
-        .calculateDeferredSWPPlanning(
-          Number(currentAge.replace(/,/g, "")),
-          Number(retirementAge.replace(/,/g, "")),
-          Number(currentSIPInvestment.replace(/,/g, "")),
-          Number(currentLumpsumInvestment.replace(/,/g, "")) ,
-          Number(portfolioGrowthRate.replace(/,/g, "")) / 100,
-          Number(swpRate.replace(/,/g, "")) / 100
+        .calculateImmediateSWPPlanning(
+          Number(retirementCorpus.replace(/,/g, "")),
+          Number(investGrowthRate.replace(/,/g, "")) / 100,
+          Number(swpReturnRate.replace(/,/g, "")) / 100,
+          Number(corpusLeft.replace(/,/g, ""))
         )
         .then((res) => {
           console.log(res.data);
-          setRetirementCorpus(
-            inputCalculatorRules.formatINR(res.data.totalReturn)
+          setSwpAmt(
+            inputCalculatorRules.formatINR(res.data.swpAmt)
           );
-          setSwpAmtAfterRetirement(
-            inputCalculatorRules.formatINR(res.data.swpReturn)
+          setMaturityCorpusAmt(
+            inputCalculatorRules.formatINR(res.data.maturityCorpusAmt)
           );
           setDisplayResult("block");
         })
@@ -161,73 +130,31 @@ export default function businessPlanning() {
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Deferred SWP Calculator
+        Immediate SWP Calculator
       </h1>
       <div style={{ margin: "0 8%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current Age (Years)
+              Retirement Corpus (₹)
             </label>
             <input
-              value={currentAge}
-              onChange={onChangeCurrentAge}
+              value={retirementCorpus}
+              onChange={onChangeRetirementCorpus}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 5"
+              placeholder="e.g. 50,00,000"
             />
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Retirement Age (Years)
+              Investment Growth Rate (%)
             </label>
             <input
-              value={retirementAge}
-              onChange={onChangeRetirementAge}
-              type="text"
-              min="0"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                       focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 18"
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current SIP Investment (₹)
-            </label>
-            <input
-              value={currentSIPInvestment}
-              onChange={onChangeCurrentSIPInvestment}
-              type="text"
-              min="0"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                       focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 18"
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Current Lumpsum Investment (₹)
-            </label>
-            <input
-              value={currentLumpsumInvestment}
-              onChange={onChangeCurrentLumpsumInvestment}
-              type="text"
-              min="0"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                       focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 5,00,000"
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Invested Portfolio Growth Rate (%)
-            </label>
-            <input
-              value={portfolioGrowthRate}
-              onChange={onChangePortfolioGrowthRate}
+              value={investGrowthRate}
+              onChange={onChangeInvestGrowthRate}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -237,28 +164,42 @@ export default function businessPlanning() {
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              SWP Rate (%)
+              SWP Return Rate (%)
             </label>
             <input
-              value={swpRate}
-              onChange={onChangeSWPRate}
+              value={swpReturnRate}
+              onChange={onChangeSwpReturnRate}
               type="text"
-              step="0.1"
+              min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               placeholder="e.g. 6"
+            />
+          </div>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              No. Of Years For SWP Withdrawal (Yrs)
+            </label>
+            <input
+              value={corpusLeft}
+              onChange={onChangeCorpusLeft}
+              type="text"
+              min="0"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                       focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="e.g. 25"
             />
           </div>
 
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="submit"
-              onClick={onSubmitDeferredSWPPlan}
+              onClick={onSubmitImmediateSWPPlan}
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
             >
-              Calculate Deferred SWP Corpus
+              Calculate Immediate SWP Corpus
             </button>
           </div>
         </form>
@@ -268,7 +209,7 @@ export default function businessPlanning() {
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-10 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Deferred SWP Calculator Maturity Amount
+              Immediate SWP Calculator Maturity Amount
             </h5>
           </div>
 
@@ -281,19 +222,19 @@ export default function businessPlanning() {
                 <thead className="text-md text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Retirement Corpus (₹){" "}
+                     SWP Amount After Retirement (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {retirementCorpus}
+                      {swpAmt}
                     </th>
                   </tr>
 
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      SWP After 62 Yrs (₹){" "}
+                      Corpus Maturity Amount (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {swpAmtAfterRetirement}
+                      {maturityCorpusAmt}
                     </th>
                   </tr>
                 </thead>

@@ -8,7 +8,7 @@ import { useContext } from "react";
 export default function businessPlanning() {
   const router = useRouter();
 
-  const { logout } = useContext(AuthContext);
+  const { checkUserLoggedIn, logout } = useContext(AuthContext);
 
   const [currentAge, setCurrentAge] = useState("");
   const [businessCost, setBusinessCost] = useState("");
@@ -146,13 +146,14 @@ export default function businessPlanning() {
     }
   };
 
-  useEffect(() => {
-    const role = localStorage.getItem("role");
 
+  useEffect(() => {
+    checkUserLoggedIn();
+    const role = localStorage.getItem("role");
     if (role !== null) {
       if (role !== "ROLE_BASIC_USER") {
-        if (role == "ROLE_ADMIN") {
-          router.push("/admin");
+        if(role == "ROLE_ADMIN"){
+          router.push("/admin")
         }
       }
     } else {
