@@ -138,14 +138,6 @@ export default function panel() {
             label: "Cost Of Delayed Investment (With Inflation)",
           },
           {
-            href: "/step-up-sip-percent-calculator",
-            label: "Step Up SIP Calculator (Percent)",
-          },
-          {
-            href: "/step-up-sip-percent-calculator-inflation",
-            label: "Step Up SIP Calculator (Percent With Inflation)",
-          },
-          {
             href: "/sip-brokerage-calculator",
             label: "Brokerage Calculation - SIP Business",
           },

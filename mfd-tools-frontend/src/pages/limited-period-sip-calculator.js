@@ -5,22 +5,25 @@ import mfToolsService from "../../helpers/mfTools";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
 
-export default function futureCostOfExpense() {
+export default function limitedPeriodSip() {
   const router = useRouter();
 
   const { checkUserLoggedIn, logout } = useContext(AuthContext);
 
-  const [timePeriod, setTimePeriod] = useState("");
-  const [expenseAmt, setExpenseAmt] = useState("");
-  const [inflationRate, setInflationRate] = useState("");
+  const [sipAmt, setSipAmt] = useState("");
+  const [noOfYearsSipInvestmentWasMade, setNoOfYearsSipInvestmentWasMade] =
+    useState("");
+  const [totalInvestmentPeriod, setTotalInvestmentPeriod] = useState("");
+  const [growthRate, setGrowthRate] = useState("");
 
-  const [futureValueExpense, setFutureValueExpense] = useState("");
+  const [totalSipInvestment, setTotalSipInvestment] = useState("");
+  const [futureValueInvestment, setFutureValueInvestment] = useState("");
 
   const [displayResult, setDisplayResult] = useState("none");
 
-  const onChangeTimePeriod = (e) => {
+  const onChangeSipAmt = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setTimePeriod(
+      setSipAmt(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -30,9 +33,9 @@ export default function futureCostOfExpense() {
     }
   };
 
-  const onChangeExpenseAmt = (e) => {
+  const onChangeNoOfYearsSipInvestmentWasMade = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setExpenseAmt(
+      setNoOfYearsSipInvestmentWasMade(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -42,9 +45,9 @@ export default function futureCostOfExpense() {
     }
   };
 
-  const onChangeInflationRate = (e) => {
+  const onChangeTotalInvestmentPeriod = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setInflationRate(
+      setTotalInvestmentPeriod(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -54,26 +57,49 @@ export default function futureCostOfExpense() {
     }
   };
 
-  const onSubmitFutureCostOfExpense = (e) => {
+  const onChangeGrowthRate = (e) => {
+    if (inputCalculatorRules.numericRegex.test(e.target.value)) {
+      setGrowthRate(
+        inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
+          e.target.value
+        )
+      );
+    } else {
+      window.alert("failure");
+    }
+  };
+
+  const onSubmitLimitedPeriodSip = (e) => {
     e.preventDefault();
     if (
-      timePeriod.length > 0 &&
-      expenseAmt.length > 0 &&
-      inflationRate.length > 0 &&
-      inputCalculatorRules.numericRegex.test(timePeriod) &&
-      inputCalculatorRules.numericRegex.test(expenseAmt) &&
-      inputCalculatorRules.numericRegex.test(inflationRate)
+      sipAmt.length > 0 &&
+      noOfYearsSipInvestmentWasMade.length > 0 &&
+      totalInvestmentPeriod.length > 0 &&
+      growthRate.length > 0 &&
+      inputCalculatorRules.numericRegex.test(sipAmt) &&
+      inputCalculatorRules.numericRegex.test(noOfYearsSipInvestmentWasMade) &&
+      inputCalculatorRules.numericRegex.test(totalInvestmentPeriod) &&
+      inputCalculatorRules.numericRegex.test(growthRate)
     ) {
       mfToolsService
-        .calculateFV(
-          Number(inflationRate.replace(/,/g, "")) / 100,
-          Number(timePeriod.replace(/,/g, "")),
-          0,
-          Number(expenseAmt.replace(/,/g, ""))
+        .calculateLimitedPeriodSip(
+          Number(sipAmt.replace(/,/g, "")),
+          Number(noOfYearsSipInvestmentWasMade.replace(/,/g, "")),
+          Number(totalInvestmentPeriod.replace(/,/g, "")),
+          Number(growthRate.replace(/,/g, "")) / 100
         )
         .then((res) => {
           console.log(res.data);
-          setFutureValueExpense(inputCalculatorRules.formatINR(res.data.futureValue ));
+          setTotalSipInvestment(
+            inputCalculatorRules.formatINR(
+              Number(sipAmt.replace(/,/g, "")) *
+                Number(noOfYearsSipInvestmentWasMade.replace(/,/g, "")) *
+                12
+            )
+          );
+          setFutureValueInvestment(
+            inputCalculatorRules.formatINR(res.data.result)
+          );
           setDisplayResult("block");
         })
         .catch((err) => {
@@ -109,17 +135,31 @@ export default function futureCostOfExpense() {
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Future Cost of Expense
+        Limited Period SIP
       </h1>
       <div style={{ margin: "0 8%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              For Time Period (Yrs)
+              SIP Amount (₹)
             </label>
             <input
-              value={timePeriod}
-              onChange={onChangeTimePeriod}
+              value={sipAmt}
+              onChange={onChangeSipAmt}
+              type="text"
+              min="0"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                       focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="e.g. 10,000"
+            />
+          </div>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              SIP Investment Made In Years
+            </label>
+            <input
+              value={noOfYearsSipInvestmentWasMade}
+              onChange={onChangeNoOfYearsSipInvestmentWasMade}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -129,42 +169,41 @@ export default function futureCostOfExpense() {
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Today's Expense Amount (₹)
+              Total Investment Period (Yrs)
             </label>
             <input
-              value={expenseAmt}
-              onChange={onChangeExpenseAmt}
+              value={totalInvestmentPeriod}
+              onChange={onChangeTotalInvestmentPeriod}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 50,000"
+              placeholder="e.g. 20"
             />
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Inflation Rate (%)
+              Growth Rate (%)
             </label>
             <input
-              value={inflationRate}
-              onChange={onChangeInflationRate}
+              value={growthRate}
+              onChange={onChangeGrowthRate}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 6"
+              placeholder="e.g. 12"
             />
           </div>
-
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="submit"
-              onClick={onSubmitFutureCostOfExpense}
+              onClick={onSubmitLimitedPeriodSip}
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
             >
-              Calculate Future Cost Of Expense
+              Calculate Limited Period SIP
             </button>
           </div>
         </form>
@@ -174,7 +213,7 @@ export default function futureCostOfExpense() {
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-10 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Future Cost of Expense
+              Limited Period SIP Maturity Amount
             </h5>
           </div>
 
@@ -187,18 +226,18 @@ export default function futureCostOfExpense() {
                 <thead className="text-md text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Present Value of Expense (₹){" "}
+                      Total SIP Investment (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {'₹' + expenseAmt}
+                      {totalSipInvestment}
                     </th>
                   </tr>
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Future Value of Expense (₹){" "}
+                      Future Value of Investment (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {futureValueExpense}
+                      {futureValueInvestment}
                     </th>
                   </tr>
                 </thead>

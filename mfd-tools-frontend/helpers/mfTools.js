@@ -114,12 +114,92 @@ const calculatePMT = (rate, nper, pv, fv = 0) => {
 
 const calculateFV = (rate, nper, pmt, pv) => {
   let token = localStorage.getItem("token");
-  return axios.post(`${NEXT_URL}/api/mftools/calculateFutureValue`, {
+  return axios.post(`${NEXT_URL}/api/mfTools/calculateFV`, {
     token,
     rate,
     nper,
     pmt,
     pv,
+  });
+};
+
+const calculateLimitedPeriodSip = (
+  sipAmt,
+  sipInvestPeriod,
+  totalInvestPeriod,
+  growthRate
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/calculateLimitedPeriodSip`, {
+    token,
+    sipAmt,
+    sipInvestPeriod,
+    totalInvestPeriod,
+    growthRate,
+  });
+};
+
+const calculateHumanLifeValue = (
+  currentIncome,
+  investGrowthRate,
+  incomeIncrementRate,
+  timePeriod
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/calculateHumanLifeValue`, {
+    token,
+    currentIncome,
+    investGrowthRate,
+    incomeIncrementRate,
+    timePeriod,
+  });
+};
+
+const calculateNeedsBasedInsurance = (
+  currentIncome,
+  investGrowthRate,
+  incomeIncrementRate,
+  timePeriod,
+  outstandingLoanAmt,
+  childEducationLiability,
+  incidentalMarriageLiability,
+  availableInsuranceDeduct,
+  investmentBalance
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/calculateNeedsBasedInsurance`, {
+    token,
+    currentIncome,
+    investGrowthRate,
+    incomeIncrementRate,
+    timePeriod,
+    outstandingLoanAmt,
+    childEducationLiability,
+    incidentalMarriageLiability,
+    availableInsuranceDeduct,
+    investmentBalance,
+  });
+};
+
+const calculateSIPReturn = (
+  rate,
+  principal,
+  years,
+  stepUp = 0,
+  inflation = 0,
+  lumpSum = false,
+  percentMode = false
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/calculateSIPReturn`, {
+    token,
+    rate,
+    principal,
+    years,
+    stepUp,
+    inflation,
+    lumpSum,
+    percentMode,
   });
 };
 
@@ -130,5 +210,9 @@ export default {
   calculateImmediateSWPPlanning,
   calculateEMIVersusSIP,
   calculatePMT,
-  calculateFV
+  calculateFV,
+  calculateLimitedPeriodSip,
+  calculateHumanLifeValue,
+  calculateNeedsBasedInsurance,
+  calculateSIPReturn
 };

@@ -5,22 +5,24 @@ import mfToolsService from "../../helpers/mfTools";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
 
-export default function futureCostOfExpense() {
+export default function humanLifeValueCalculator() {
   const router = useRouter();
 
   const { checkUserLoggedIn, logout } = useContext(AuthContext);
 
-  const [timePeriod, setTimePeriod] = useState("");
-  const [expenseAmt, setExpenseAmt] = useState("");
-  const [inflationRate, setInflationRate] = useState("");
+  const [currentAnnualIncome, setCurrentAnnualIncome] = useState("");
+  const [investmentGrowthRate, setInvestmentGrowthRate] =
+    useState("");
+  const [incomeIncrementRate, setIncomeIncrementRate] = useState("");
+  const [totalPeriodOfIncome, setTotalPeriodOfIncome] = useState("");
 
-  const [futureValueExpense, setFutureValueExpense] = useState("");
+  const [insuranceCorpusReqd, setInsuranceCorpusReqd] = useState("");
 
   const [displayResult, setDisplayResult] = useState("none");
 
-  const onChangeTimePeriod = (e) => {
+  const onChangeCurrentAnnualIncome = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setTimePeriod(
+      setCurrentAnnualIncome(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -30,9 +32,9 @@ export default function futureCostOfExpense() {
     }
   };
 
-  const onChangeExpenseAmt = (e) => {
+  const onChangeInvestmentGrowthRate = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setExpenseAmt(
+      setInvestmentGrowthRate(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -42,9 +44,9 @@ export default function futureCostOfExpense() {
     }
   };
 
-  const onChangeInflationRate = (e) => {
+  const onChangeIncomeIncrementRate = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setInflationRate(
+      setIncomeIncrementRate(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -54,26 +56,44 @@ export default function futureCostOfExpense() {
     }
   };
 
-  const onSubmitFutureCostOfExpense = (e) => {
+  const onChangeTotalPeriodOfIncome = (e) => {
+    if (inputCalculatorRules.numericRegex.test(e.target.value)) {
+      setTotalPeriodOfIncome(
+        inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
+          e.target.value
+        )
+      );
+    } else {
+      window.alert("failure");
+    }
+  };
+
+  const onSubmitHumanLifeValueCalculator = (e) => {
     e.preventDefault();
     if (
-      timePeriod.length > 0 &&
-      expenseAmt.length > 0 &&
-      inflationRate.length > 0 &&
-      inputCalculatorRules.numericRegex.test(timePeriod) &&
-      inputCalculatorRules.numericRegex.test(expenseAmt) &&
-      inputCalculatorRules.numericRegex.test(inflationRate)
+      currentAnnualIncome.length > 0 &&
+      investmentGrowthRate.length > 0 &&
+      incomeIncrementRate.length > 0 &&
+      totalPeriodOfIncome.length > 0 &&
+      inputCalculatorRules.numericRegex.test(currentAnnualIncome) &&
+      inputCalculatorRules.numericRegex.test(investmentGrowthRate) &&
+      inputCalculatorRules.numericRegex.test(incomeIncrementRate) &&
+      inputCalculatorRules.numericRegex.test(totalPeriodOfIncome)
     ) {
       mfToolsService
-        .calculateFV(
-          Number(inflationRate.replace(/,/g, "")) / 100,
-          Number(timePeriod.replace(/,/g, "")),
-          0,
-          Number(expenseAmt.replace(/,/g, ""))
+        .calculateHumanLifeValue(
+          Number(currentAnnualIncome.replace(/,/g, "")),
+          Number(investmentGrowthRate.replace(/,/g, "")) / 100,
+          Number(incomeIncrementRate.replace(/,/g, "")) / 100,
+          Number(totalPeriodOfIncome.replace(/,/g, ""))
         )
         .then((res) => {
           console.log(res.data);
-          setFutureValueExpense(inputCalculatorRules.formatINR(res.data.futureValue ));
+          setInsuranceCorpusReqd(
+            inputCalculatorRules.formatINR(
+              res.data.reqdCorpus
+            )
+          );
           setDisplayResult("block");
         })
         .catch((err) => {
@@ -109,62 +129,75 @@ export default function futureCostOfExpense() {
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Future Cost of Expense
+       Human Life Value Method - Calculation of Sum Insurance Amount
       </h1>
       <div style={{ margin: "0 8%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              For Time Period (Yrs)
+              Current Annual Income (₹)
             </label>
             <input
-              value={timePeriod}
-              onChange={onChangeTimePeriod}
+              value={currentAnnualIncome}
+              onChange={onChangeCurrentAnnualIncome}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 25"
+              placeholder="e.g. 10,00,000"
             />
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Today's Expense Amount (₹)
+              Investment Growth Rate (%)
             </label>
             <input
-              value={expenseAmt}
-              onChange={onChangeExpenseAmt}
+              value={investmentGrowthRate}
+              onChange={onChangeInvestmentGrowthRate}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 50,000"
+              placeholder="e.g. 10"
             />
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Inflation Rate (%)
+              Income Increment Rate (%)
             </label>
             <input
-              value={inflationRate}
-              onChange={onChangeInflationRate}
+              value={incomeIncrementRate}
+              onChange={onChangeIncomeIncrementRate}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 6"
+              placeholder="e.g. 8"
             />
           </div>
-
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Total Period Of Income (Yrs)
+            </label>
+            <input
+              value={totalPeriodOfIncome}
+              onChange={onChangeTotalPeriodOfIncome}
+              type="text"
+              min="0"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                       focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="e.g. 12"
+            />
+          </div>
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="submit"
-              onClick={onSubmitFutureCostOfExpense}
+              onClick={onSubmitHumanLifeValueCalculator}
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
             >
-              Calculate Future Cost Of Expense
+              Calculate Human Life Value
             </button>
           </div>
         </form>
@@ -174,7 +207,7 @@ export default function futureCostOfExpense() {
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-10 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Future Cost of Expense
+              Human Life Insurance Amount
             </h5>
           </div>
 
@@ -187,18 +220,10 @@ export default function futureCostOfExpense() {
                 <thead className="text-md text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Present Value of Expense (₹){" "}
+                     Insurance Corpus Required (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {'₹' + expenseAmt}
-                    </th>
-                  </tr>
-                  <tr>
-                    <th scope="col" className="px-6 py-3">
-                      Future Value of Expense (₹){" "}
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      {futureValueExpense}
+                      {insuranceCorpusReqd}
                     </th>
                   </tr>
                 </thead>

@@ -5,16 +5,17 @@ import mfToolsService from "../../helpers/mfTools";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
 
-export default function futureCostOfExpense() {
+export default function simpleSipCalculator() {
   const router = useRouter();
 
   const { checkUserLoggedIn, logout } = useContext(AuthContext);
 
   const [timePeriod, setTimePeriod] = useState("");
-  const [expenseAmt, setExpenseAmt] = useState("");
-  const [inflationRate, setInflationRate] = useState("");
+  const [sipAmount, setSipAmount] = useState("");
+  const [lumpsumAmount,setLumpsumAmount] = useState("");
+  const [rateOfReturn, setRateOfReturn] = useState("");
 
-  const [futureValueExpense, setFutureValueExpense] = useState("");
+  const [lumpsumMaturityAmount, setLumpsumMaturityAmount] = useState("");
 
   const [displayResult, setDisplayResult] = useState("none");
 
@@ -30,9 +31,9 @@ export default function futureCostOfExpense() {
     }
   };
 
-  const onChangeExpenseAmt = (e) => {
+  const onChangeSipAmount = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setExpenseAmt(
+      setSipAmount(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -42,9 +43,9 @@ export default function futureCostOfExpense() {
     }
   };
 
-  const onChangeInflationRate = (e) => {
+   const onChangeLumpsumAmount = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setInflationRate(
+      setLumpsumAmount(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -54,26 +55,51 @@ export default function futureCostOfExpense() {
     }
   };
 
-  const onSubmitFutureCostOfExpense = (e) => {
+  const onChangeRateOfReturn = (e) => {
+    if (inputCalculatorRules.numericRegex.test(e.target.value)) {
+      setRateOfReturn(
+        inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
+          e.target.value
+        )
+      );
+    } else {
+      window.alert("failure");
+    }
+  };
+
+  const onSubmitLumpsumCalculator = (e) => {
     e.preventDefault();
     if (
       timePeriod.length > 0 &&
-      expenseAmt.length > 0 &&
-      inflationRate.length > 0 &&
+      sipAmount.length > 0 &&
+      lumpsumAmount.length > 0 &&
+      rateOfReturn.length > 0 &&
       inputCalculatorRules.numericRegex.test(timePeriod) &&
-      inputCalculatorRules.numericRegex.test(expenseAmt) &&
-      inputCalculatorRules.numericRegex.test(inflationRate)
+      inputCalculatorRules.numericRegex.test(sipAmount) &&
+            inputCalculatorRules.numericRegex.test(lumpsumAmount) &&
+      inputCalculatorRules.numericRegex.test(rateOfReturn)
     ) {
       mfToolsService
-        .calculateFV(
-          Number(inflationRate.replace(/,/g, "")) / 100,
+        .calculateSIPReturn(
+          Number(rateOfReturn.replace(/,/g, "")) / 100,
+          Number(sip.replace(/,/g, "")),
           Number(timePeriod.replace(/,/g, "")),
           0,
-          Number(expenseAmt.replace(/,/g, ""))
+          0,
+          true
         )
         .then((res) => {
           console.log(res.data);
-          setFutureValueExpense(inputCalculatorRules.formatINR(res.data.futureValue ));
+          if (
+            res.data.sipReturnList !== undefined &&
+            res.data.sipReturnList.length > 0
+          ) {
+            setLumpsumMaturityAmount(
+              inputCalculatorRules.formatINR(
+                res.data.sipReturnList[res.data.sipReturnList.length - 1]
+              )
+            );
+          }
           setDisplayResult("block");
         })
         .catch((err) => {
@@ -109,7 +135,7 @@ export default function futureCostOfExpense() {
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Future Cost of Expense
+        Lumpsum Calculator
       </h1>
       <div style={{ margin: "0 8%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -124,47 +150,46 @@ export default function futureCostOfExpense() {
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 25"
+              placeholder="e.g. 10"
             />
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Today's Expense Amount (₹)
+              For Amount (₹)
             </label>
             <input
-              value={expenseAmt}
-              onChange={onChangeExpenseAmt}
+              value={amount}
+              onChange={onChangeAmount}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 50,000"
+              placeholder="e.g. 10,000"
             />
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Inflation Rate (%)
+              Expected Rate Of Return (%)
             </label>
             <input
-              value={inflationRate}
-              onChange={onChangeInflationRate}
+              value={rateOfReturn}
+              onChange={onChangeRateOfReturn}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="e.g. 6"
+              placeholder="e.g. 8"
             />
           </div>
-
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="submit"
-              onClick={onSubmitFutureCostOfExpense}
+              onClick={onSubmitLumpsumCalculator}
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
             >
-              Calculate Future Cost Of Expense
+              Calculate Lumpsum Return
             </button>
           </div>
         </form>
@@ -174,7 +199,7 @@ export default function futureCostOfExpense() {
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-10 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Future Cost of Expense
+              Lumpsum Maturity & Growth (₹)
             </h5>
           </div>
 
@@ -187,18 +212,10 @@ export default function futureCostOfExpense() {
                 <thead className="text-md text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Present Value of Expense (₹){" "}
+                      Lumpsum Maturity & Growth (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {'₹' + expenseAmt}
-                    </th>
-                  </tr>
-                  <tr>
-                    <th scope="col" className="px-6 py-3">
-                      Future Value of Expense (₹){" "}
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      {futureValueExpense}
+                      {lumpsumMaturityAmount}
                     </th>
                   </tr>
                 </thead>
