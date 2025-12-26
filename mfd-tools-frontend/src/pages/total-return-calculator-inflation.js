@@ -14,9 +14,12 @@ export default function simpleSipCalculator() {
   const [sipAmount, setSipAmount] = useState("");
   const [lumpsumAmount, setLumpsumAmount] = useState("");
   const [rateOfReturn, setRateOfReturn] = useState("");
+  const [inflationRate, setInflationRate] = useState("");
 
-  const [totalSipLumpsumMaturityAmt, setTotalSipLumpsumMaturityAmount] = useState("");
-  const [totalSipLumpsumInvestedAmount,setTotalSipLumpsumInvestedAmount] = useState("");
+  const [totalSipLumpsumMaturityAmt, setTotalSipLumpsumMaturityAmount] =
+    useState("");
+  const [totalSipLumpsumInvestedAmount, setTotalSipLumpsumInvestedAmount] =
+    useState("");
 
   const [displayResult, setDisplayResult] = useState("none");
 
@@ -68,17 +71,31 @@ export default function simpleSipCalculator() {
     }
   };
 
-  const onSubmitTotalReturnCalculator = (e) => {
+  const onChangeInflationRate = (e) => {
+    if (inputCalculatorRules.numericRegex.test(e.target.value)) {
+      setInflationRate(
+        inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
+          e.target.value
+        )
+      );
+    } else {
+      window.alert("failure");
+    }
+  };
+
+  const onSubmitTotalReturnWithInflationCalculator = (e) => {
     e.preventDefault();
     if (
       timePeriod.length > 0 &&
       sipAmount.length > 0 &&
       lumpsumAmount.length > 0 &&
       rateOfReturn.length > 0 &&
+      inflationRate.length > 0 &&
       inputCalculatorRules.numericRegex.test(timePeriod) &&
       inputCalculatorRules.numericRegex.test(sipAmount) &&
       inputCalculatorRules.numericRegex.test(lumpsumAmount) &&
-      inputCalculatorRules.numericRegex.test(rateOfReturn)
+      inputCalculatorRules.numericRegex.test(rateOfReturn) &&
+      inputCalculatorRules.numericRegex.test(inflationRate)
     ) {
       mfToolsService
         .calculateTotalReturn(
@@ -86,9 +103,7 @@ export default function simpleSipCalculator() {
           Number(sipAmount.replace(/,/g, "")),
           Number(rateOfReturn.replace(/,/g, "")) / 100,
           Number(timePeriod.replace(/,/g, "")),
-          0,
-          0,
-          true
+          Number(inflationRate.replace(/,/g, "")) / 100
         )
         .then((res) => {
           console.log(res.data);
@@ -98,8 +113,10 @@ export default function simpleSipCalculator() {
           ) {
             setTotalSipLumpsumInvestedAmount(
               inputCalculatorRules.formatINR(
-                Number(lumpsumAmount.replace(/,/g, "")) + 
-                (Number(sipAmount.replace(/,/g, "")) * 12 * Number(timePeriod.replace(/,/g, "")))
+                Number(lumpsumAmount.replace(/,/g, "")) +
+                  Number(sipAmount.replace(/,/g, "")) *
+                    12 *
+                    Number(timePeriod.replace(/,/g, ""))
               )
             );
             setTotalSipLumpsumMaturityAmount(
@@ -143,7 +160,7 @@ export default function simpleSipCalculator() {
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Total Return Calculator
+        Total Return Calculator (With Inflation)
       </h1>
       <div style={{ margin: "0 8%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -175,7 +192,7 @@ export default function simpleSipCalculator() {
               placeholder="e.g. 10,000"
             />
           </div>
-           <div>
+          <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
               For Lumpsum Amount (₹)
             </label>
@@ -203,15 +220,29 @@ export default function simpleSipCalculator() {
               placeholder="e.g. 8"
             />
           </div>
+           <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Inflation Rate (%)
+            </label>
+            <input
+              value={inflationRate}
+              onChange={onChangeInflationRate}
+              type="text"
+              min="0"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                       focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="e.g. 8"
+            />
+          </div>
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="submit"
-              onClick={onSubmitTotalReturnCalculator}
+              onClick={onSubmitTotalReturnWithInflationCalculator}
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
             >
-              Calculate Total Return
+              Calculate Total Return (With Inflation)
             </button>
           </div>
         </form>
@@ -221,7 +252,7 @@ export default function simpleSipCalculator() {
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-10 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              SIP With Lumpsum Maturity & Growth (₹)
+              SIP With Lumpsum Maturity & Growth (With Inflation) (₹)
             </h5>
           </div>
 
@@ -234,7 +265,7 @@ export default function simpleSipCalculator() {
                 <thead className="text-md text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Total SIP + Lumpsum Amount Invested (₹){" "}
+                      Total SIP + Lumpsum Amount Invested (With Inflation) (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
                       {totalSipLumpsumInvestedAmount}
@@ -242,7 +273,7 @@ export default function simpleSipCalculator() {
                   </tr>
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Total SIP + Lumpsum Amount Maturity (₹){" "}
+                      Total SIP + Lumpsum Amount Maturity (With Inflation) (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
                       {totalSipLumpsumMaturityAmt}

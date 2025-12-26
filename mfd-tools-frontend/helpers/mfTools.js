@@ -203,6 +203,45 @@ const calculateSIPReturn = (
   });
 };
 
+const calculateTotalReturn = (
+  initialLumpsum,
+  principal,
+  rate,
+  years,
+  inflation = 0
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/calculateTotalReturn`, {
+    token,
+    initialLumpsum,
+    principal,
+    rate,
+    years,
+    inflation,
+  });
+};
+
+const calculateDifferentialReturnsByAge = (
+  currentAge,
+  retirementAge,
+  corpus,
+  rate,
+  inflation = 0
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(
+    `${NEXT_URL}/api/mfTools/calculateDifferentialReturnsByAge`,
+    {
+      token,
+      currentAge,
+      retirementAge,
+      corpus,
+      rate,
+      inflation,
+    }
+  );
+};
+
 export default {
   calculateGoalInvestPlan,
   calculateRetirementPlan,
@@ -214,5 +253,7 @@ export default {
   calculateLimitedPeriodSip,
   calculateHumanLifeValue,
   calculateNeedsBasedInsurance,
-  calculateSIPReturn
+  calculateSIPReturn,
+  calculateTotalReturn,
+  calculateDifferentialReturnsByAge,
 };

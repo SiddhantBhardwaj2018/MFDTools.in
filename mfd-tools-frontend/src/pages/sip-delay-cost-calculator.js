@@ -10,19 +10,20 @@ export default function simpleSipCalculator() {
 
   const { checkUserLoggedIn, logout } = useContext(AuthContext);
 
-  const [timePeriod, setTimePeriod] = useState("");
-  const [sipAmount, setSipAmount] = useState("");
-  const [lumpsumAmount, setLumpsumAmount] = useState("");
+  const [currentAge, setCurrentAge] = useState("");
+  const [retirementAge, setRetirementAge] = useState("");
+  const [retirementCorpus, setRetirementCorpus] = useState("");
   const [rateOfReturn, setRateOfReturn] = useState("");
 
-  const [totalSipLumpsumMaturityAmt, setTotalSipLumpsumMaturityAmount] = useState("");
-  const [totalSipLumpsumInvestedAmount,setTotalSipLumpsumInvestedAmount] = useState("");
+  const [prevTenYrSip, setPrevTenYrSip] = useState("");
+  const [currentYrSip,setCurrentYrSip] = useState("");
+  const [nextTenYrSip,setNextTenYrSip] = useState("");
 
   const [displayResult, setDisplayResult] = useState("none");
 
-  const onChangeTimePeriod = (e) => {
+  const onChangeCurrentAge = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setTimePeriod(
+      setCurrentAge(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -32,9 +33,9 @@ export default function simpleSipCalculator() {
     }
   };
 
-  const onChangeSipAmount = (e) => {
+  const onChangeRetirementAge = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setSipAmount(
+      setRetirementAge(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -44,9 +45,9 @@ export default function simpleSipCalculator() {
     }
   };
 
-  const onChangeLumpsumAmount = (e) => {
+  const onChangeRetirementCorpus = (e) => {
     if (inputCalculatorRules.numericRegex.test(e.target.value)) {
-      setLumpsumAmount(
+      setRetirementCorpus(
         inputCalculatorRules.modifyNumberValueForLocaleRepresentation(
           e.target.value
         )
@@ -68,43 +69,45 @@ export default function simpleSipCalculator() {
     }
   };
 
-  const onSubmitTotalReturnCalculator = (e) => {
+  const onSubmitCostOfDelay = (e) => {
     e.preventDefault();
     if (
-      timePeriod.length > 0 &&
-      sipAmount.length > 0 &&
-      lumpsumAmount.length > 0 &&
+      currentAge.length > 0 &&
+      retirementAge.length > 0 &&
+      retirementCorpus.length > 0 &&
       rateOfReturn.length > 0 &&
-      inputCalculatorRules.numericRegex.test(timePeriod) &&
-      inputCalculatorRules.numericRegex.test(sipAmount) &&
-      inputCalculatorRules.numericRegex.test(lumpsumAmount) &&
+      inputCalculatorRules.numericRegex.test(currentAge) &&
+      inputCalculatorRules.numericRegex.test(retirementAge) &&
+      inputCalculatorRules.numericRegex.test(retirementCorpus) &&
       inputCalculatorRules.numericRegex.test(rateOfReturn)
     ) {
       mfToolsService
-        .calculateTotalReturn(
-          Number(lumpsumAmount.replace(/,/g, "")),
-          Number(sipAmount.replace(/,/g, "")),
-          Number(rateOfReturn.replace(/,/g, "")) / 100,
-          Number(timePeriod.replace(/,/g, "")),
-          0,
-          0,
-          true
+        .calculateDifferentialReturnsByAge(
+          Number(currentAge.replace(/,/g, "")),
+          Number(retirementAge.replace(/,/g, "")),
+          Number(retirementCorpus.replace(/,/g, "")),
+          Number(rateOfReturn.replace(/,/g, "")) / 100
         )
         .then((res) => {
           console.log(res.data);
           if (
-            res.data.totalReturnList !== undefined &&
-            res.data.totalReturnList.length > 0
+            res.data.currentYr !== undefined &&
+            res.data.prevTenYr !== undefined &&
+            res.data.nextTenYr !== undefined
           ) {
-            setTotalSipLumpsumInvestedAmount(
+            setPrevTenYrSip(
               inputCalculatorRules.formatINR(
-                Number(lumpsumAmount.replace(/,/g, "")) + 
-                (Number(sipAmount.replace(/,/g, "")) * 12 * Number(timePeriod.replace(/,/g, "")))
+                res.data.currentYr
               )
             );
-            setTotalSipLumpsumMaturityAmount(
+            setCurrentYrSip(
               inputCalculatorRules.formatINR(
-                res.data.totalReturnList[res.data.totalReturnList.length - 1]
+                res.data.prevTenYr
+              )
+            );
+            setNextTenYrSip(
+              inputCalculatorRules.formatINR(
+                res.data.nextTenYr
               )
             );
           }
@@ -143,17 +146,17 @@ export default function simpleSipCalculator() {
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Total Return Calculator
+        SIP & Cost Of Delayed Investment
       </h1>
       <div style={{ margin: "0 8%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              For Time Period (Yrs)
+              Current Age (Yrs)
             </label>
             <input
-              value={timePeriod}
-              onChange={onChangeTimePeriod}
+              value={currentAge}
+              onChange={onChangeCurrentAge}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -163,11 +166,11 @@ export default function simpleSipCalculator() {
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              For SIP Amount (₹)
+              Retirement Age (Yrs)
             </label>
             <input
-              value={sipAmount}
-              onChange={onChangeSipAmount}
+              value={retirementAge}
+              onChange={onChangeRetirementAge}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -177,11 +180,11 @@ export default function simpleSipCalculator() {
           </div>
            <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              For Lumpsum Amount (₹)
+              Expected Retirement Corpus (₹)
             </label>
             <input
-              value={lumpsumAmount}
-              onChange={onChangeLumpsumAmount}
+              value={retirementCorpus}
+              onChange={onChangeRetirementCorpus}
               type="text"
               min="0"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
@@ -206,12 +209,12 @@ export default function simpleSipCalculator() {
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="submit"
-              onClick={onSubmitTotalReturnCalculator}
+              onClick={onSubmitCostOfDelay}
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
             >
-              Calculate Total Return
+              Calculate Cost Of Delay SIP
             </button>
           </div>
         </form>
@@ -221,7 +224,7 @@ export default function simpleSipCalculator() {
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-10 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              SIP With Lumpsum Maturity & Growth (₹)
+              Differential Returns By SIP (₹)
             </h5>
           </div>
 
@@ -234,18 +237,26 @@ export default function simpleSipCalculator() {
                 <thead className="text-md text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Total SIP + Lumpsum Amount Invested (₹){" "}
+                      SIP Amount From Age {Number(currentAge.replace(/,/g, "")) - 10} Yrs (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {totalSipLumpsumInvestedAmount}
+                      {prevTenYrSip}
                     </th>
                   </tr>
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Total SIP + Lumpsum Amount Maturity (₹){" "}
+                      SIP Amount From Age {Number(currentAge.replace(/,/g, ""))} Yrs (₹){" "}
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      {totalSipLumpsumMaturityAmt}
+                      {currentYrSip}
+                    </th>
+                  </tr>
+                    <tr>
+                    <th scope="col" className="px-6 py-3">
+                      SIP Amount From Age {Number(currentAge.replace(/,/g, "")) + 10} Yrs (₹){" "}
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      {nextTenYrSip}
                     </th>
                   </tr>
                 </thead>
