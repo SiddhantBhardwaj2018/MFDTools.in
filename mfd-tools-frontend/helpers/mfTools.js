@@ -242,6 +242,59 @@ const calculateDifferentialReturnsByAge = (
   );
 };
 
+const calculateSipBrokerage = (sipAmt, sipRate, commissionRate, time) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/distributorCommissionCalc`, {
+    token,
+    sipAmt,
+    sipRate,
+    commissionRate,
+    time,
+  });
+};
+
+const diffBetweenInsuranceAndSIPCommission = (
+  investAmt,
+  avgInsureCommission,
+  capApprRate,
+  trail,
+  time
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(
+    `${NEXT_URL}/api/mfTools/diffBetweenInsuranceAndSIPCommission`,
+    {
+      token,
+      investAmt,
+      avgInsureCommission,
+      capApprRate,
+      trail,
+      time,
+    }
+  );
+};
+
+const revenueModelSIPAndOneTimeBookSize = (
+  sipBookSize,
+  investRate,
+  commissionRate,
+  equityAum,
+  time
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(
+    `${NEXT_URL}/api/mfTools/revenueModelSIPAndOneTimeBookSize`,
+    {
+      token,
+      sipBookSize,
+      investRate,
+      commissionRate,
+      equityAum,
+      time,
+    }
+  );
+};
+
 export default {
   calculateGoalInvestPlan,
   calculateRetirementPlan,
@@ -256,4 +309,7 @@ export default {
   calculateSIPReturn,
   calculateTotalReturn,
   calculateDifferentialReturnsByAge,
+  calculateSipBrokerage,
+  diffBetweenInsuranceAndSIPCommission,
+  revenueModelSIPAndOneTimeBookSize,
 };
