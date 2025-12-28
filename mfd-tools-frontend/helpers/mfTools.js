@@ -295,6 +295,69 @@ const revenueModelSIPAndOneTimeBookSize = (
   );
 };
 
+const calculateModelFinancialPortfolio = (
+  ppfAmt,
+  ppfRate,
+  pfAmt,
+  pfRate,
+  nscAmt,
+  nscRate,
+  postalAmt,
+  postalRate,
+  bankAmt,
+  bankRate,
+  companyAmt,
+  companyRate,
+  insuranceAmt,
+  insuranceRate,
+  equityAmt,
+  equityRate,
+  balancedAmt,
+  balancedRate,
+  nonLiquidDebtAmt,
+  nonLiquidDebtRate,
+  liquidDebtAmt,
+  liquidDebtRate,
+  sipAmt,
+  sipRate,
+  rdAmt,
+  rdRate
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(
+    `${NEXT_URL}/api/mfTools/calculateModelFinancialPortfolio`,
+    {
+      token,
+      ppfAmt,
+      ppfRate,
+      pfAmt,
+      pfRate,
+      nscAmt,
+      nscRate,
+      postalAmt,
+      postalRate,
+      bankAmt,
+      bankRate,
+      companyAmt,
+      companyRate,
+      insuranceAmt,
+      insuranceRate,
+      equityAmt,
+      equityRate,
+      balancedAmt,
+      balancedRate,
+      nonLiquidDebtAmt,
+      nonLiquidDebtRate,
+      liquidDebtAmt,
+      liquidDebtRate,
+      sipAmt,
+      sipRate,
+      rdAmt,
+      rdRate,
+    }
+  );
+};
+
 export default {
   calculateGoalInvestPlan,
   calculateRetirementPlan,
@@ -312,4 +375,5 @@ export default {
   calculateSipBrokerage,
   diffBetweenInsuranceAndSIPCommission,
   revenueModelSIPAndOneTimeBookSize,
+  calculateModelFinancialPortfolio
 };

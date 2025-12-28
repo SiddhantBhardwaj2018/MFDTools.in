@@ -26,7 +26,7 @@ const modifyNumberValueForLocaleRepresentation = (value) => {
 };
 
 const formatINR = (num) => {
-  return '₹' + num.toLocaleString("en-IN");
+  return '₹' + Math.round(num).toLocaleString("en-IN");
 };
 
 
