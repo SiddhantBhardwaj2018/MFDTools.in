@@ -358,6 +358,150 @@ const calculateModelFinancialPortfolio = (
   );
 };
 
+const getSchemeReturnsView = (fundHouse, schemeType, timePeriod, offset) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/getSchemeReturnsView`, {
+    token,
+    fundHouse,
+    schemeType,
+    timePeriod,
+    offset,
+  });
+};
+
+const getSchemePointView = (fundHouse, schemeType, previousDate, nextDate) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/getSchemeReturnsView`, {
+    token,
+    fundHouse,
+    schemeType,
+    previousDate,
+    nextDate,
+  });
+};
+
+const getSchemeAdvancedAnalysis = (
+  fundHouse,
+  schemeType,
+  indicator,
+  offset
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/getSchemeReturnsView`, {
+    token,
+    fundHouse,
+    schemeType,
+    indicator,
+    offset,
+  });
+};
+
+const getSchemeList = (fundHouse, schemeType) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/getSchemeList`, {
+    token,
+    fundHouse,
+    schemeType,
+  });
+};
+
+const getSchemePerformanceList = (fundHouse, schemeType) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/getSchemePerformanceList`, {
+    token,
+    fundHouse,
+    schemeType,
+  });
+};
+
+const getSchemeListForSWP = (
+  fundHouse,
+  investDate,
+  schemeType,
+  withdrawalDate
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/getSchemeListForSWP`, {
+    token,
+    fundHouse,
+    investDate,
+    schemeType,
+    withdrawalDate,
+  });
+};
+
+const getSchemeListForSIP = (fundHouse, investDate, schemeType) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/getSchemeListForSIP`, {
+    token,
+    fundHouse,
+    investDate,
+    schemeType,
+  });
+};
+
+const calculateSWP = (
+  investDate,
+  lumpsum,
+  schemeName,
+  withdrawPercent,
+  withdrawalDate
+) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/calculateSWP`, {
+    token,
+    investDate,
+    lumpsum,
+    schemeName,
+    withdrawPercent,
+    withdrawalDate,
+  });
+};
+
+const calculateSIP = (investDate, lumpsum, schemeName) => {
+  let token = localStorage.getItem("token");
+  return axios.post(`${NEXT_URL}/api/mfTools/calculateSWP`, {
+    token,
+    investDate,
+    lumpsum,
+    schemeName,
+  });
+};
+
+const getDecliningNavSensexPerformance = (fundHouse, schemeType) => {
+  let token = localStorage.getItem("token");
+  return axios.post(
+    `${NEXT_URL}/api/mfTools/getDecliningNavSensexPerformance`,
+    {
+      token,
+      fundHouse,
+      schemeType,
+    }
+  );
+};
+
+const getNavSensexPerformance = (fundHouse, schemeType) => {
+  let token = localStorage.getItem("token");
+  return axios.post(
+    `${NEXT_URL}/api/mfTools/getDecliningNavSensexPerformance`,
+    {
+      token,
+      fundHouse,
+      schemeType,
+    }
+  );
+};
+
+const getWeeklyBestAndWorstMFSchemePerformers = () => {
+  let token = localStorage.getItem("token");
+  return axios.post(
+    `${NEXT_URL}/api/mfTools/getDecliningNavSensexPerformance`,
+    {
+      token,
+    }
+  );
+}
+
 export default {
   calculateGoalInvestPlan,
   calculateRetirementPlan,
@@ -375,5 +519,17 @@ export default {
   calculateSipBrokerage,
   diffBetweenInsuranceAndSIPCommission,
   revenueModelSIPAndOneTimeBookSize,
-  calculateModelFinancialPortfolio
+  calculateModelFinancialPortfolio,
+  getSchemeReturnsView,
+  getSchemePointView,
+  getSchemeAdvancedAnalysis,
+  getSchemeList,
+  getSchemePerformanceList,
+  getSchemeListForSWP,
+  getSchemeListForSIP,
+  calculateSWP,
+  calculateSIP,
+  getDecliningNavSensexPerformance,
+  getNavSensexPerformance,
+  getWeeklyBestAndWorstMFSchemePerformers
 };

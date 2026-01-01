@@ -1,9 +1,17 @@
 package com.siddhantbhardwaj.mfd_tools_backend.service.implementation;
 
+import com.siddhantbhardwaj.mfd_tools_backend.dto.AdvancedQueryRequest;
+import com.siddhantbhardwaj.mfd_tools_backend.dto.PointCalcView;
+import com.siddhantbhardwaj.mfd_tools_backend.dto.ReturnViewParam;
+import com.siddhantbhardwaj.mfd_tools_backend.dto.SchemeListQuery;
 import com.siddhantbhardwaj.mfd_tools_backend.service.blueprintservices.MFToolsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,6 +22,15 @@ import java.util.stream.Stream;
 public class MFToolsServiceImpl implements MFToolsService {
 
     private static final Logger mfToolsServiceLogger = LoggerFactory.getLogger(MFToolsServiceImpl.class);
+
+    private final RestClient mfResearchRestClient;
+
+    @Autowired
+    public MFToolsServiceImpl(
+            @Qualifier("mfResearchRestClient") RestClient mfResearchRestClient
+    ) {
+        this.mfResearchRestClient = mfResearchRestClient;
+    }
 
     @Override
     public Map<String, Double> calculateFutureValue(double rate, double nper, double pmt, double pv) throws Exception{
@@ -825,4 +842,266 @@ public class MFToolsServiceImpl implements MFToolsService {
         return outputPortfolio;
     }
 
+    @Override
+    public Map<String, Object> obtainSchemeReturnView(ReturnViewParam returnViewParam) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),returnViewParam);
+        Map<String,Object> schemeReturnViewMap = new HashMap<>();
+        try{
+            schemeReturnViewMap = mfResearchRestClient.post().uri("/getSchemeReturnsView")
+                    .body(returnViewParam)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), schemeReturnViewMap);
+        return schemeReturnViewMap;
+    }
+
+    @Override
+    public Map<String, Object> getSchemePointView(PointCalcView pointCalcView) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),pointCalcView);
+        Map<String,Object> schemePointViewMap = new HashMap<>();
+        try{
+            schemePointViewMap = mfResearchRestClient.post().uri("/getSchemePointView")
+                    .body(pointCalcView)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), schemePointViewMap);
+        return schemePointViewMap;
+    }
+
+    @Override
+    public Map<String, Object> getSchemeAdvancedAnalysis(AdvancedQueryRequest advancedQueryRequest) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),advancedQueryRequest);
+        Map<String,Object> advancedQueryResultMap = new HashMap<>();
+        try{
+            advancedQueryResultMap = mfResearchRestClient.post().uri("/getSchemeAdvancedAnalysis")
+                    .body(advancedQueryRequest)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), advancedQueryResultMap);
+        return advancedQueryResultMap;
+    }
+
+    @Override
+    public Map<String, Object> getSchemeList(SchemeListQuery schemeListQuery) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),schemeListQuery);
+        Map<String,Object> schemeListResultMap = new HashMap<>();
+        try{
+            schemeListResultMap = mfResearchRestClient.post().uri("/getSchemeList")
+                    .body(schemeListQuery)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), schemeListResultMap);
+        return schemeListResultMap;
+    }
+
+    @Override
+    public Map<String, Object> getSchemePerformanceList(Map<String, List<String>> schemeListQuery) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),schemeListQuery);
+        Map<String,Object> schemePerformanceListResultMap = new HashMap<>();
+        try{
+            schemePerformanceListResultMap = mfResearchRestClient.post().uri("/getSchemePerformanceList")
+                    .body(schemeListQuery)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), schemePerformanceListResultMap);
+        return schemePerformanceListResultMap;
+    }
+
+    @Override
+    public Map<String, Object> getSchemeListForSWP(Map<String, String> swpListMap) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),swpListMap);
+        Map<String,Object> schemeSWPListMap = new HashMap<>();
+        try{
+            schemeSWPListMap = mfResearchRestClient.post().uri("/getSchemeListForSWP")
+                    .body(swpListMap)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), schemeSWPListMap);
+        return schemeSWPListMap;
+    }
+
+    @Override
+    public Map<String, Object> getSchemeListForSIP(Map<String, String> sipListMap) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),sipListMap);
+        Map<String,Object> schemeSIPListMap = new HashMap<>();
+        try{
+            schemeSIPListMap = mfResearchRestClient.post().uri("/getSchemeListForSIP")
+                    .body(sipListMap)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), schemeSIPListMap);
+        return schemeSIPListMap;
+    }
+
+    @Override
+    public Map<String, Object> calculateSWP(Map<String, Object> swpRequestMap) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),swpRequestMap);
+        Map<String,Object> swpCalculationResultMap = new HashMap<>();
+        try{
+            swpCalculationResultMap = mfResearchRestClient.post().uri("/calculateSWP")
+                    .body(swpRequestMap)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), swpCalculationResultMap);
+        return swpCalculationResultMap;
+    }
+
+    @Override
+    public Map<String, Object> calculateSIP(Map<String, Object> sipRequestMap) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),sipRequestMap);
+        Map<String,Object> sipCalculationResultMap = new HashMap<>();
+        try{
+            sipCalculationResultMap = mfResearchRestClient.post().uri("/calculateSIP")
+                    .body(sipRequestMap)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), sipCalculationResultMap);
+        return sipCalculationResultMap;
+    }
+
+    @Override
+    public Map<String, Object> getDecliningNavSensexPerformance(Map<String, Object> declineNavSensexRequestMap) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),declineNavSensexRequestMap);
+        Map<String,Object> decliningNavSensexPerformanceMap = new HashMap<>();
+        try{
+            decliningNavSensexPerformanceMap = mfResearchRestClient.post().uri("/getDecliningNavSensexPerformance")
+                    .body(declineNavSensexRequestMap)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), decliningNavSensexPerformanceMap);
+        return decliningNavSensexPerformanceMap;
+    }
+
+    @Override
+    public Map<String, Object> getNavSensexPerformance(Map<String, String> navSensexRequestMap) throws Exception {
+        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(),navSensexRequestMap);
+        Map<String,Object> navSensexPerformanceMap = new HashMap<>();
+        try{
+            navSensexPerformanceMap = mfResearchRestClient.post().uri("/getDecliningNavSensexPerformance")
+                    .body(navSensexRequestMap)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), navSensexPerformanceMap);
+        return navSensexPerformanceMap;
+    }
+
+    @Override
+    public Map<String, Object> getWeeklyBestAndWorstMFSchemePerformers() throws Exception {
+        mfToolsServiceLogger.info("Entering {} method ",
+                Thread.currentThread().getStackTrace()[1].getMethodName());
+        Map<String,Object> weeklyBestAndWorstPerformersMap = new HashMap<>();
+        try{
+            weeklyBestAndWorstPerformersMap = mfResearchRestClient.post().uri("/getWeeklyBestAndWorstMFSchemePerformers")
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+        }catch (Exception e){
+            mfToolsServiceLogger.error("Error occurred: {}", e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+        mfToolsServiceLogger.info("Returning from method {} with output {}",
+                Thread.currentThread().getStackTrace()[1].getMethodName(), weeklyBestAndWorstPerformersMap);
+        return weeklyBestAndWorstPerformersMap;
+    }
 }

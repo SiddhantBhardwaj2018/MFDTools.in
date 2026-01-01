@@ -12,15 +12,15 @@ export default function panel() {
     const role = localStorage.getItem("role");
     if (role !== null) {
       if (role !== "ROLE_BASIC_USER") {
-        if(role == "ROLE_ADMIN"){
-          router.push("/admin")
+        if (role == "ROLE_ADMIN") {
+          router.push("/admin");
         }
       }
     } else {
       router.push("/");
     }
   }, []);
-  
+
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">Panel</h1>
@@ -29,41 +29,41 @@ export default function panel() {
         style={{ marginLeft: "5%", marginRight: "5%" }}
       >
         {[
-          { 
-              href: "/education-planning", 
-              label: "Education Planning" 
+          {
+            href: "/education-planning",
+            label: "Education Planning",
           },
-          { 
-              href: "/marriage-planning", 
-              label: "Marriage Planning" 
+          {
+            href: "/marriage-planning",
+            label: "Marriage Planning",
           },
-          {   
-              href: "/vacation-planning", 
-              label: "Vacation Planning" 
+          {
+            href: "/vacation-planning",
+            label: "Vacation Planning",
           },
-          {   
-              href: "/dream-car-planning", 
-              label: "Dream Car Planning" 
+          {
+            href: "/dream-car-planning",
+            label: "Dream Car Planning",
           },
-          {   
-              href: "/house-planning", 
-              label: "House Planning" 
+          {
+            href: "/house-planning",
+            label: "House Planning",
           },
-          {   
-              href: "/business-planning", 
-              label: "Business Planning" 
+          {
+            href: "/business-planning",
+            label: "Business Planning",
           },
-          {   
-              href: "/emergency-planning", 
-              label: "Emergency Planning" 
+          {
+            href: "/emergency-planning",
+            label: "Emergency Planning",
           },
-          { 
-              href: "/retirement-planning", 
-              label: "Retirement Planning" 
+          {
+            href: "/retirement-planning",
+            label: "Retirement Planning",
           },
-          {   
-              href: "/deferred-swp-planning", 
-              label: "Deferred SWP Calculator" 
+          {
+            href: "/deferred-swp-planning",
+            label: "Deferred SWP Calculator",
           },
           {
             href: "/immediate-swp-planning",
@@ -73,9 +73,9 @@ export default function panel() {
             href: "/portfolio-forecasting-calculator",
             label: "Portfolio Forecasting Calculator",
           },
-          { 
-            href: "/emi-vs-sip-calculator", 
-            label: "Loan EMI vs SIP" 
+          {
+            href: "/emi-vs-sip-calculator",
+            label: "Loan EMI vs SIP",
           },
           {
             href: "/sip-to-crorepati-calculator",
@@ -162,16 +162,16 @@ export default function panel() {
             label: "Financial Health Quiz",
           },
           {
-            href: "/scheme-trends-analysis",
-            label: "Scheme Trends Analysis",
-          },
-          {
             href: "/scheme-return-analysis",
             label: "Scheme Return Analysis",
           },
           {
             href: "/risk-metrics-analysis",
             label: "Risk Metrics Analysis",
+          },
+          {
+            href: "/scheme-trends-analysis",
+            label: "Scheme Trends Analysis",
           },
           {
             href: "/scheme-comparison-analysis",

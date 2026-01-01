@@ -1,6 +1,6 @@
 package com.siddhantbhardwaj.mfd_tools_backend.service.blueprintservices;
 
-import com.siddhantbhardwaj.mfd_tools_backend.dto.MFCalculatorRequestDTO;
+import com.siddhantbhardwaj.mfd_tools_backend.dto.*;
 
 import java.util.List;
 import java.util.Map;
@@ -48,5 +48,29 @@ public interface MFToolsService {
     public Map<String,Double> calculatePostRetirementSWPReturn(double retirementCorpus,double investGrowthRate, double swpReturnRate, double corpusLeft) throws Exception;
 
     public Map<String,Map<Integer,Map<String,Double>>> calculateModelFinancialPortfolio(double ppfAmt, double ppfRate, double pfAmt, double pfRate, double nscAmt, double nscRate, double postalAmt, double postalRate, double bankAmt, double bankRate, double companyAmt, double companyRate, double insuranceAmt, double insuranceRate, double equityAmt, double equityRate, double balancedAmt, double balancedRate, double nonLiquidDebtAmt, double nonLiquidDebtRate, double liquidDebtAmt, double liquidDebtRate, double sipAmt, double sipRate, double rdAmt, double rdRate) throws Exception;
+
+    public Map<String, Object> obtainSchemeReturnView(ReturnViewParam returnViewParam) throws Exception;
+
+    public Map<String,Object> getSchemePointView(PointCalcView pointCalcView) throws Exception;
+
+    public Map<String,Object> getSchemeAdvancedAnalysis(AdvancedQueryRequest advancedQueryRequest) throws Exception;
+
+    public Map<String, Object> getSchemeList(SchemeListQuery schemeListQuery) throws Exception;
+
+    public Map<String,Object> getSchemePerformanceList(Map<String,List<String>> schemeListQuery) throws Exception;
+
+    public Map<String,Object> getSchemeListForSWP(Map<String,String> swpListMap) throws Exception;
+
+    public Map<String,Object> getSchemeListForSIP(Map<String,String> sipListMap) throws Exception;
+
+    public Map<String,Object> calculateSWP(Map<String,Object> swpRequestMap) throws Exception;
+
+    public Map<String,Object> calculateSIP(Map<String,Object> sipRequestMap) throws Exception;
+
+    public Map<String,Object> getDecliningNavSensexPerformance(Map<String,Object> declineNavSensexRequestMap) throws  Exception;
+
+    public Map<String,Object> getNavSensexPerformance(Map<String, String> navSensexRequestMap) throws Exception;
+
+    public Map<String,Object> getWeeklyBestAndWorstMFSchemePerformers() throws Exception;
 
 }
