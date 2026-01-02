@@ -371,7 +371,7 @@ const getSchemeReturnsView = (fundHouse, schemeType, timePeriod, offset) => {
 
 const getSchemePointView = (fundHouse, schemeType, previousDate, nextDate) => {
   let token = localStorage.getItem("token");
-  return axios.post(`${NEXT_URL}/api/mfTools/getSchemeReturnsView`, {
+  return axios.post(`${NEXT_URL}/api/mfTools/getSchemePointView`, {
     token,
     fundHouse,
     schemeType,
@@ -387,7 +387,7 @@ const getSchemeAdvancedAnalysis = (
   offset
 ) => {
   let token = localStorage.getItem("token");
-  return axios.post(`${NEXT_URL}/api/mfTools/getSchemeReturnsView`, {
+  return axios.post(`${NEXT_URL}/api/mfTools/getSchemeAdvancedAnalysis`, {
     token,
     fundHouse,
     schemeType,
@@ -483,7 +483,7 @@ const getDecliningNavSensexPerformance = (fundHouse, schemeType) => {
 const getNavSensexPerformance = (fundHouse, schemeType) => {
   let token = localStorage.getItem("token");
   return axios.post(
-    `${NEXT_URL}/api/mfTools/getDecliningNavSensexPerformance`,
+    `${NEXT_URL}/api/mfTools/getNavSensexPerformance`,
     {
       token,
       fundHouse,

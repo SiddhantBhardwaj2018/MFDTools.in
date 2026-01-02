@@ -1068,7 +1068,7 @@ public class MFToolsServiceImpl implements MFToolsService {
                 Thread.currentThread().getStackTrace()[1].getMethodName(),navSensexRequestMap);
         Map<String,Object> navSensexPerformanceMap = new HashMap<>();
         try{
-            navSensexPerformanceMap = mfResearchRestClient.post().uri("/getDecliningNavSensexPerformance")
+            navSensexPerformanceMap = mfResearchRestClient.post().uri("/getNavSensexPerformance")
                     .body(navSensexRequestMap)
                     .retrieve()
                     .body(new ParameterizedTypeReference<Map<String, Object>>() {

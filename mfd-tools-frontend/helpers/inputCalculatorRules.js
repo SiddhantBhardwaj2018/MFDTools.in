@@ -29,11 +29,16 @@ const formatINR = (num) => {
   return '₹' + Math.round(num).toLocaleString("en-IN");
 };
 
+const formatSensex = (num) => {
+  return Math.round(num).toLocaleString("en-IN");
+};
+
 
 const numericRegex = /^[\d,]*\.?\d*$/;
 
 export default {
     modifyNumberValueForLocaleRepresentation,
     numericRegex,
+    formatSensex,
     formatINR
 }

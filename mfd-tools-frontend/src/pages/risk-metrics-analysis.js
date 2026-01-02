@@ -13,16 +13,18 @@ export default function businessPlanning() {
   const WINDOW_SIZE = 5;
 
   const [highlightReturnColor, setHightlightReturnColor] = useState({
-    1: false,
-    3: true,
-    5: false,
-    10: false,
-    inception: false,
+    sd: true,
+    beta: false,
+    alpha: false,
+    jensen_alpha: false,
+    sharpe_ratio: false,
+    treynor_ratio: false,
+    sortino_ratio: false,
   });
 
   const [fundHouse, setFundHouse] = useState("All");
   const [schemeType, setSchemeType] = useState("All");
-  const [timePeriod, setTimePeriod] = useState("3");
+  const [indicator, setIndicator] = useState("sd");
 
   const [resultSchemes, setResultSchemes] = useState([]);
   const [totalSchemeCount, setTotalSchemeCount] = useState(0);
@@ -156,59 +158,91 @@ export default function businessPlanning() {
   ];
 
   const indicatorOptions = [
-    { name: "1 Yr", value: "1" },
-    { name: "3 Yrs", value: "3" },
-    { name: "5 Yrs", value: "5" },
-    { name: "10 Yrs", value: "10" },
-    { name: "Inception", value: "Inception" },
+    { name: "Standard Deviation", value: "sd" },
+    { name: "Beta", value: "beta" },
+    { name: "Alpha", value: "alpha" },
+    { name: "Jensen's Alpha", value: "jensen_alpha" },
+    { name: "Sharpe Ratio", value: "sharpe_ratio" },
+    { name: "Treynor Ratio", value: "treynor_ratio" },
+    { name: "Sortino Ratio", value: "sortino_ratio" },
   ];
 
-  const triggerSchemeReturnPull = (page) => {
+  const triggerRiskMetricsPull = (page) => {
     mfToolsService
-      .getSchemeReturnsView(fundHouse, schemeType, timePeriod, page)
+      .getSchemeAdvancedAnalysis(fundHouse, schemeType, indicator, page)
       .then((res) => {
-        setResultSchemes(res.data.schemeList);
-        setTotalSchemeCount(res.data.totalSchemeCount);
+        setResultSchemes(res.data.advancedSchemeViewList);
+        setTotalSchemeCount(res.data.totalAdvancedSchemeCount);
         setDisplayResult("block");
-        if (timePeriod == "1") {
+        if (indicator == "sd") {
           setHightlightReturnColor({
-            1: true,
-            3: false,
-            5: false,
-            10: false,
-            inception: false,
+            sd: true,
+            beta: false,
+            alpha: false,
+            jensen_alpha: false,
+            sharpe_ratio: false,
+            treynor_ratio: false,
+            sortino_ratio: false,
           });
-        } else if (timePeriod == "3") {
+        } else if (indicator == "beta") {
           setHightlightReturnColor({
-            1: false,
-            3: true,
-            5: false,
-            10: false,
-            inception: false,
+            sd: false,
+            beta: true,
+            alpha: false,
+            jensen_alpha: false,
+            sharpe_ratio: false,
+            treynor_ratio: false,
+            sortino_ratio: false,
           });
-        } else if (timePeriod == "5") {
+        } else if (indicator == "alpha") {
           setHightlightReturnColor({
-            1: true,
-            3: false,
-            5: true,
-            10: false,
-            inception: false,
+            sd: false,
+            beta: false,
+            alpha: true,
+            jensen_alpha: false,
+            sharpe_ratio: false,
+            treynor_ratio: false,
+            sortino_ratio: false,
           });
-        } else if (timePeriod == "10") {
+        } else if (indicator == "jensen_alpha") {
           setHightlightReturnColor({
-            1: false,
-            3: false,
-            5: false,
-            10: true,
-            inception: false,
+            sd: false,
+            beta: false,
+            alpha: false,
+            jensen_alpha: true,
+            sharpe_ratio: false,
+            treynor_ratio: false,
+            sortino_ratio: false,
           });
-        } else if (timePeriod == "10") {
+        } else if (indicator == "sharpe_ratio") {
           setHightlightReturnColor({
-            1: false,
-            3: false,
-            5: false,
-            10: false,
-            inception: true,
+            sd: false,
+            beta: false,
+            alpha: false,
+            jensen_alpha: false,
+            sharpe_ratio: true,
+            treynor_ratio: false,
+            sortino_ratio: false,
+          });
+        } else if (indicator == "treynor_ratio") {
+          setHightlightReturnColor({
+            sd: false,
+            beta: false,
+            alpha: false,
+            jensen_alpha: false,
+            sharpe_ratio: false,
+            treynor_ratio: true,
+            sortino_ratio: false,
+          });
+        } else if (indicator == "sortino_ratio") {
+          setHightlightReturnColor({
+            sd: false,
+            beta: false,
+            alpha: false,
+            jensen_alpha: false,
+            sharpe_ratio: false,
+            treynor_ratio: false,
+            sortino_ratio: true,
           });
         }
       })
@@ -220,18 +254,18 @@ export default function businessPlanning() {
   };
 
   const fetchPage = (page) => {
-    triggerSchemeReturnPull(page - 1);
+    triggerRiskMetricsPull(page - 1);
   };
 
   /* ================= SEARCH ================= */
 
-  const onSearchSchemeReturns = (e) => {
+  const onSearchRiskMetrics = (e) => {
     e.preventDefault();
 
     setCurrentPage(1);
     setStartIdx(0);
 
-    triggerSchemeReturnPull(0);
+    triggerRiskMetricsPull(0);
   };
 
   /* ================= PAGINATION ================= */
@@ -275,13 +309,13 @@ export default function businessPlanning() {
     } else {
       router.push("/");
     }
-    triggerSchemeReturnPull(0);
+    triggerRiskMetricsPull(0);
   }, []);
 
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Scheme Return Analysis
+        Scheme Risk Metrics Analysis
       </h1>
       <div style={{ margin: "0 5%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -319,14 +353,14 @@ export default function businessPlanning() {
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Select Time Period
+              Select Indicator
             </label>
             <select
               className="border border-gray-300 px-3 py-2 rounded-md"
-              value={timePeriod}
-              onChange={(e) => setTimePeriod(e.target.value)}
+              value={indicator}
+              onChange={(e) => setIndicator(e.target.value)}
             >
-              {timePeriodOptions.map((opt) => (
+              {indicatorOptions.map((opt) => (
                 <option key={opt.name} value={opt.value}>
                   {opt.name}
                 </option>
@@ -336,7 +370,7 @@ export default function businessPlanning() {
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="click"
-              onClick={onSearchSchemeReturns}
+              onClick={onSearchRiskMetrics}
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
@@ -351,7 +385,7 @@ export default function businessPlanning() {
             style={{ display: "flex", justifyContent: "center" }}
           >
             <h5 className="mt-7 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Scheme Trends Analysis Results
+              Scheme Risk Metrics Analysis Results
             </h5>
           </div>
           <div className="relative overflow-x-auto mt-5">
@@ -362,12 +396,14 @@ export default function businessPlanning() {
               >
                 <tr>
                   {[
-                    "Scheme Name",
-                    "1 Year (%)",
-                    "3 Years (%)",
-                    "5 Years (%)",
-                    "10 Years (%)",
-                    "Inception (%)",
+                    "SCHEME NAME",
+                    "SD",
+                    "BETA",
+                    "ALPHA",
+                    "JENSEN'S ALPHA",
+                    "SHARPE RATIO",
+                    "TREYNOR RATIO",
+                    "SORTINO RATIO",
                   ].map((head) => (
                     <th key={head} className="text-white text-center px-6 py-3">
                       {head}
@@ -383,24 +419,64 @@ export default function businessPlanning() {
                       {scheme.schemeName}
                     </th>
 
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["1"] ? `bg-blue-200` : `` }`}>
-                      {scheme.oneYearReturn}
+                    <td
+                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                        highlightReturnColor["sd"] ? `bg-blue-200` : ``
+                      }`}
+                    >
+                      {scheme.standardDeviation != null ? scheme.standardDeviation : "-"}
                     </td>
 
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["3"] ? `bg-blue-200` : `` }`}>
-                      {scheme.threeYearReturn}
+                    <td
+                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                        highlightReturnColor["beta"] ? `bg-blue-200` : ``
+                      }`}
+                    >
+                      {scheme.beta != null ? scheme.beta : "-"}
                     </td>
 
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["5"] ? `bg-blue-200` : `` }`}>
-                      {scheme.fiveYearReturn}
+                    <td
+                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                        highlightReturnColor["alpha"] ? `bg-blue-200` : ``
+                      }`}
+                    >
+                      {scheme.alpha != null ? scheme.alpha : "-"}
                     </td>
 
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["10"] ? `bg-blue-200` : `` }`}>
-                      {scheme.tenYearReturn}
+                    <td
+                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                        highlightReturnColor["jensen_alpha"]
+                          ? `bg-blue-200`
+                          : ``
+                      }`}
+                    >
+                      {scheme.jensenAlpha != null ? scheme.jensenAlpha : "-"}
                     </td>
 
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["inception"] ? `bg-blue-200` : `` }`}>
-                      {scheme.inceptionReturn}
+                    <td
+                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                        highlightReturnColor["sharpe_ratio"] ? `bg-blue-200` : ``
+                      }`}
+                    >
+                      {scheme.sharpeRatio != null ? scheme.sharpeRatio : "-"}
+                    </td>
+                    <td
+                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                        highlightReturnColor["treynor_ratio"]
+                          ? `bg-blue-200`
+                          : ``
+                      }`}
+                    >
+                      {scheme.treynorRatio != null ? scheme.treynorRatio : "-"}
+                    </td>
+                     <td
+                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                        highlightReturnColor["sortino_ratio"]
+                          ? `bg-blue-200`
+                          : ``
+                      }`}
+                    >
+                      {scheme.sortinoRatio != null ? scheme.sortinoRatio : "-"}
                     </td>
                   </tr>
                 ))}
