@@ -9,29 +9,27 @@ export default function businessPlanning() {
   const router = useRouter();
 
   const { checkUserLoggedIn, logout } = useContext(AuthContext);
-  const ITEMS_PER_PAGE = 15;
-  const WINDOW_SIZE = 5;
-
-  const [highlightReturnColor, setHightlightReturnColor] = useState({
-    sd: true,
-    beta: false,
-    alpha: false,
-    jensen_alpha: false,
-    sharpe_ratio: false,
-    treynor_ratio: false,
-    sortino_ratio: false,
-  });
 
   const [fundHouse, setFundHouse] = useState("All");
   const [schemeType, setSchemeType] = useState("All");
-  const [indicator, setIndicator] = useState("sd");
+  const [schemeList, setSchemeList] = useState([]);
+  const [schemeListError, setSchemeListError] = useState(false);
+  const [selectedSchemes, setSelectedSchemes] = useState([]);
   const [errorAvailable, setErrorAvailable] = useState(false);
+  const [maxAlpha,setMaxAlpha] = useState(0);
+  const [maxFiveYear,setMaxFiveYear] = useState(0);
+  const [maxInception,setMaxInception] = useState(0);
+  const [maxJensenAlpha,setMaxJensenAlpha] = useState(0);
+  const [maxOneYear,setMaxOneYear] = useState(0);
+  const [maxSharpe,setMaxSharpe] = useState(0);
+  const [maxSortino,setMaxSortino] = useState(0);
+  const [maxTenYear,setMaxTenYear] = useState(0);
+  const [maxThreeYear,setMaxThreeYear] = useState(0);
+  const [maxTreynor,setMaxTreynor] = useState(0);
+  const [minBeta,setMinBeta] = useState(0);
+  const [minSD,setMinSD] = useState(0);
 
   const [resultSchemes, setResultSchemes] = useState([]);
-  const [totalSchemeCount, setTotalSchemeCount] = useState(0);
-
-  const [currentPage, setCurrentPage] = useState(1); // 1-based
-  const [startIdx, setStartIdx] = useState(0); // window start (0-based)
 
   const [displayResult, setDisplayResult] = useState("none");
 
@@ -158,150 +156,77 @@ export default function businessPlanning() {
     "Interval Fund Schemes ( Growth )",
   ];
 
-  const indicatorOptions = [
-    { name: "Standard Deviation", value: "sd" },
-    { name: "Beta", value: "beta" },
-    { name: "Alpha", value: "alpha" },
-    { name: "Jensen's Alpha", value: "jensen_alpha" },
-    { name: "Sharpe Ratio", value: "sharpe_ratio" },
-    { name: "Treynor Ratio", value: "treynor_ratio" },
-    { name: "Sortino Ratio", value: "sortino_ratio" },
-  ];
+  const handleSchemeToggle = (value) => {
+    setSelectedSchemes((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+    setTimeout(() => {
+      console.log(selectedSchemes);
+    }, 4000);
+  };
 
-  const triggerRiskMetricsPull = (page) => {
+  const triggerPullSchemeList = () => {
     mfToolsService
-      .getSchemeAdvancedAnalysis(fundHouse, schemeType, indicator, page)
+      .getSchemeList(fundHouse, schemeType)
       .then((res) => {
-        if (res.data.advancedSchemeViewList.length > 0) {
-          setResultSchemes(res.data.advancedSchemeViewList);
-          setTotalSchemeCount(res.data.totalAdvancedSchemeCount);
-          setDisplayResult("block");
-          if (indicator == "sd") {
-            setHightlightReturnColor({
-              sd: true,
-              beta: false,
-              alpha: false,
-              jensen_alpha: false,
-              sharpe_ratio: false,
-              treynor_ratio: false,
-              sortino_ratio: false,
-            });
-          } else if (indicator == "beta") {
-            setHightlightReturnColor({
-              sd: false,
-              beta: true,
-              alpha: false,
-              jensen_alpha: false,
-              sharpe_ratio: false,
-              treynor_ratio: false,
-              sortino_ratio: false,
-            });
-          } else if (indicator == "alpha") {
-            setHightlightReturnColor({
-              sd: false,
-              beta: false,
-              alpha: true,
-              jensen_alpha: false,
-              sharpe_ratio: false,
-              treynor_ratio: false,
-              sortino_ratio: false,
-            });
-          } else if (indicator == "jensen_alpha") {
-            setHightlightReturnColor({
-              sd: false,
-              beta: false,
-              alpha: false,
-              jensen_alpha: true,
-              sharpe_ratio: false,
-              treynor_ratio: false,
-              sortino_ratio: false,
-            });
-          } else if (indicator == "sharpe_ratio") {
-            setHightlightReturnColor({
-              sd: false,
-              beta: false,
-              alpha: false,
-              jensen_alpha: false,
-              sharpe_ratio: true,
-              treynor_ratio: false,
-              sortino_ratio: false,
-            });
-          } else if (indicator == "treynor_ratio") {
-            setHightlightReturnColor({
-              sd: false,
-              beta: false,
-              alpha: false,
-              jensen_alpha: false,
-              sharpe_ratio: false,
-              treynor_ratio: true,
-              sortino_ratio: false,
-            });
-          } else if (indicator == "sortino_ratio") {
-            setHightlightReturnColor({
-              sd: false,
-              beta: false,
-              alpha: false,
-              jensen_alpha: false,
-              sharpe_ratio: false,
-              treynor_ratio: false,
-              sortino_ratio: true,
-            });
-          }
-          setErrorAvailable(false);
+        if (res.data.schemeList.length > 0) {
+          setSchemeList(res.data.schemeList);
+          setSchemeListError(false);
         } else {
-          setErrorAvailable(true);
+          setSchemeListError(true);
+          setSchemeList([]);
         }
       })
       .catch((err) => {
         if (err.status === 401) {
           logout();
+        } else {
+          setSchemeListError(true);
         }
       });
   };
 
-  const fetchPage = (page) => {
-    triggerRiskMetricsPull(page - 1);
+  const triggerSchemeComparisonPull = () => {
+    if ((selectedSchemes.length > 0) & (selectedSchemes.length <= 20)) {
+      mfToolsService
+        .getSchemePerformanceList(selectedSchemes)
+        .then((res) => {
+          if (res.data.schemeList.length > 0) {
+            setResultSchemes(res.data.schemeList);
+            setDisplayResult("block");
+            setErrorAvailable(false);
+            setMaxAlpha(res.data.maxAlpha);
+            setMaxFiveYear(res.data.maxFiveYear);
+            setMaxInception(res.data.maxInception);
+            setMaxJensenAlpha(res.data.maxJensenAlpha);
+            setMaxOneYear(res.data.maxOneYear);
+            setMaxThreeYear(res.data.maxThreeYear);
+            setMaxTenYear(res.data.maxTenYear);
+            setMaxTreynor(res.data.maxTreynor);
+            setMinBeta(res.data.minBeta);
+            setMinSD(res.data.minSD);
+            setMaxSharpe(res.data.maxSharpe);
+            setMaxSortino(res.data.maxSortino);
+          } else {
+            setErrorAvailable(true);
+          }
+        })
+        .catch((err) => {
+          if (err.status === 401) {
+            logout();
+          }
+        });
+    }
   };
 
-  /* ================= SEARCH ================= */
-
-  const onSearchRiskMetrics = (e) => {
+  const onSearchSchemeComparisonPull = (e) => {
     e.preventDefault();
-
-    setCurrentPage(1);
-    setStartIdx(0);
-
-    triggerRiskMetricsPull(0);
+    triggerSchemeComparisonPull();
   };
 
-  /* ================= PAGINATION ================= */
-
-  const totalPages = Math.ceil(totalSchemeCount / ITEMS_PER_PAGE);
-  const endIdx =
-    startIdx + WINDOW_SIZE < totalPages ? startIdx + WINDOW_SIZE : totalPages;
-
-  const onClickPage = (page) => {
-    setCurrentPage(page);
-    fetchPage(page);
-  };
-
-  const onClickNextBtn = () => {
-    if (endIdx < totalPages) {
-      const newStart = startIdx + WINDOW_SIZE;
-      setStartIdx(newStart);
-      setCurrentPage(newStart + 1);
-      fetchPage(newStart + 1);
-    }
-  };
-
-  const onClickPrevBtn = () => {
-    if (startIdx > 0) {
-      const newStart = startIdx - WINDOW_SIZE;
-      setStartIdx(newStart);
-      setCurrentPage(newStart + 1);
-      fetchPage(newStart + 1);
-    }
-  };
+  useEffect(() => {
+    triggerPullSchemeList();
+  }, [fundHouse, schemeType]);
 
   useEffect(() => {
     checkUserLoggedIn();
@@ -315,13 +240,12 @@ export default function businessPlanning() {
     } else {
       router.push("/");
     }
-    triggerRiskMetricsPull(0);
   }, []);
 
   return (
     <>
       <h1 className="text-center font-semibold mb-10 text-3xl">
-        Scheme Risk Metrics Analysis
+        Scheme Comparison Analysis
       </h1>
       <div style={{ margin: "0 5%" }}>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -359,24 +283,38 @@ export default function businessPlanning() {
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Select Indicator
+              Select Schemes
             </label>
-            <select
-              className="border border-gray-300 px-3 py-2 rounded-md"
-              value={indicator}
-              onChange={(e) => setIndicator(e.target.value)}
-            >
-              {indicatorOptions.map((opt) => (
-                <option key={opt.name} value={opt.value}>
-                  {opt.name}
-                </option>
-              ))}
-            </select>
+            <div>
+              <div className="border border-gray-300 rounded-md p-2 max-h-48 overflow-y-auto">
+                <label className="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
+                  {schemeListError
+                    ? "No Scheme Data Available"
+                    : "Select upto 20 schemes"}
+                </label>
+                {schemeList.map((opt, idx) => (
+                  <label
+                    key={idx}
+                    className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      value={opt}
+                      checked={selectedSchemes.includes(opt)}
+                      onChange={() => handleSchemeToggle(opt)}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded"
+                    />
+                    <span className="text-sm text-gray-900">{opt}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
+
           <div className="md:col-span-2 flex justify-center mt-4">
             <button
               type="click"
-              onClick={onSearchRiskMetrics}
+              onClick={onSearchSchemeComparisonPull}
               className="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 
                        focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
                        text-sm px-6 py-3 transition"
@@ -400,10 +338,10 @@ export default function businessPlanning() {
                   style={{ display: "flex", justifyContent: "center" }}
                 >
                   <h5 className="mt-7 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-                    Scheme Risk Metrics Analysis Results
+                    Scheme Comparison Analysis Results
                   </h5>
                 </div>
-                <table className="w-full text-sm text-left text-gray-500 border-2 border-gray-800 border-collapse">
+                <table className="w-full mb-10 text-sm text-left text-gray-500 border-2 border-gray-800 border-collapse">
                   <thead
                     className="text-xs uppercase"
                     style={{ background: "#063599" }}
@@ -411,6 +349,11 @@ export default function businessPlanning() {
                     <tr>
                       {[
                         "SCHEME NAME",
+                        "1 YR (%)",
+                        "3 YR (%)",
+                        "5 YR (%)",
+                        "10 YR (%)",
+                        "INCEPTION (%)",
                         "SD",
                         "BETA",
                         "ALPHA",
@@ -435,39 +378,63 @@ export default function businessPlanning() {
                         <th className="px-6 py-4 font-bold text-gray-900 border-2 border-gray-800 text-center whitespace-normal">
                           {scheme.schemeName}
                         </th>
-
                         <td
-                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
-                            highlightReturnColor["sd"] ? `bg-blue-200` : ``
-                          }`}
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.oneYearReturn != null & scheme.oneYearReturn == maxOneYear ? `bg-green-300` : ``}`}
                         >
-                          {scheme.standardDeviation != null
-                            ? scheme.standardDeviation
+                          {scheme.oneYearReturn != null
+                            ? scheme.oneYearReturn
+                            : "-"}
+                        </td>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.threeYearReturn != null & scheme.threeYearReturn == maxThreeYear ? `bg-green-300` : ``}`}
+                        >
+                          {scheme.threeYearReturn != null
+                            ? scheme.threeYearReturn
+                            : "-"}
+                        </td>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.fiveYearReturn != null & scheme.fiveYearReturn == maxFiveYear ? `bg-green-300` : ``}`}
+                        >
+                          {scheme.fiveYearReturn != null
+                            ? scheme.fiveYearReturn
+                            : "-"}
+                        </td>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.tenYearReturn != null & scheme.tenYearReturn == maxTenYear ? `bg-green-300` : ``}`}
+                        >
+                          {scheme.tenYearReturn != null
+                            ? scheme.tenYearReturn
+                            : "-"}
+                        </td>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.inceptionReturn != null & scheme.inceptionReturn == maxInception ? `bg-green-300` : ``}`}
+                        >
+                          {scheme.inceptionReturn != null
+                            ? scheme.inceptionReturn
+                            : "-"}
+                        </td>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.schemeSD != null & scheme.schemeSD == minSD ? `bg-green-300` : ``}`}
+                        >
+                          {scheme.schemeSD != null
+                            ? scheme.schemeSD
                             : "-"}
                         </td>
 
                         <td
-                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
-                            highlightReturnColor["beta"] ? `bg-blue-200` : ``
-                          }`}
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.schemeBeta != null & scheme.schemeBeta == minBeta ? `bg-green-300` : ``}`}
                         >
-                          {scheme.beta != null ? scheme.beta : "-"}
+                          {scheme.schemeBeta != null ? scheme.schemeBeta : "-"}
                         </td>
 
                         <td
-                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
-                            highlightReturnColor["alpha"] ? `bg-blue-200` : ``
-                          }`}
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.alpha != null & scheme.alpha == maxAlpha ? `bg-green-300` : ``}`}
                         >
                           {scheme.alpha != null ? scheme.alpha : "-"}
                         </td>
 
                         <td
-                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
-                            highlightReturnColor["jensen_alpha"]
-                              ? `bg-blue-200`
-                              : ``
-                          }`}
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.jensenAlpha != null & scheme.jensenAlpha == maxJensenAlpha ? `bg-green-300` : ``}`}
                         >
                           {scheme.jensenAlpha != null
                             ? scheme.jensenAlpha
@@ -475,33 +442,21 @@ export default function businessPlanning() {
                         </td>
 
                         <td
-                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
-                            highlightReturnColor["sharpe_ratio"]
-                              ? `bg-blue-200`
-                              : ``
-                          }`}
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.sharpeRatio != null & scheme.sharpeRatio == maxSharpe ? `bg-green-300` : ``}`}
                         >
                           {scheme.sharpeRatio != null
                             ? scheme.sharpeRatio
                             : "-"}
                         </td>
                         <td
-                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
-                            highlightReturnColor["treynor_ratio"]
-                              ? `bg-blue-200`
-                              : ``
-                          }`}
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.treynorRatio != null & scheme.treynorRatio == maxTreynor ? `bg-green-300` : ``}`}
                         >
                           {scheme.treynorRatio != null
                             ? scheme.treynorRatio
                             : "-"}
                         </td>
                         <td
-                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
-                            highlightReturnColor["sortino_ratio"]
-                              ? `bg-blue-200`
-                              : ``
-                          }`}
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${scheme.sortinoRatio != null & scheme.sortinoRatio == maxSortino ? `bg-green-300` : ``}`}
                         >
                           {scheme.sortinoRatio != null
                             ? scheme.sortinoRatio
@@ -511,50 +466,6 @@ export default function businessPlanning() {
                     ))}
                   </tbody>
                 </table>
-                <nav className="mt-7 mb-10">
-                  <ul className="flex justify-center">
-                    {startIdx > 0 && (
-                      <li>
-                        <button
-                          onClick={onClickPrevBtn}
-                          className="px-3 py-1 border"
-                        >
-                          Prev
-                        </button>
-                      </li>
-                    )}
-
-                    {(() => {
-                      let buttons = [];
-                      for (let i = startIdx + 1; i <= endIdx; i++) {
-                        buttons.push(
-                          <li key={i}>
-                            <button
-                              onClick={() => onClickPage(i)}
-                              className={`px-3 py-1 border ${
-                                i === currentPage ? "bg-blue-200" : ""
-                              }`}
-                            >
-                              {i}
-                            </button>
-                          </li>
-                        );
-                      }
-                      return buttons;
-                    })()}
-
-                    {endIdx < totalPages && (
-                      <li>
-                        <button
-                          onClick={onClickNextBtn}
-                          className="px-3 py-1 border"
-                        >
-                          Next
-                        </button>
-                      </li>
-                    )}
-                  </ul>
-                </nav>
               </>
             )}
           </div>

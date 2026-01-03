@@ -623,7 +623,7 @@ public class MFToolsController {
 
     @PreAuthorize("hasAuthority('ROLE_BASIC_USER')")
     @PostMapping("/getSchemePerformanceList")
-    public Map<String, Object> getSchemePerformanceList(Map<String, List<String>> schemeListQuery) throws Exception {
+    public Map<String, Object> getSchemePerformanceList(@RequestBody Map<String, List<String>> schemeListQuery) throws Exception {
         mfToolsControllerLogger.info("Entering {} method with schemeListQuery {}", Thread.currentThread().getStackTrace()[2].getMethodName(),
                 schemeListQuery);
         Map<String, Object> schemePerformanceListMap = new HashMap<>();

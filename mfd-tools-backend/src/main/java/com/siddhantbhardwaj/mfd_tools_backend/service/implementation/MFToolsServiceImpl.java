@@ -932,7 +932,7 @@ public class MFToolsServiceImpl implements MFToolsService {
 
     @Override
     public Map<String, Object> getSchemePerformanceList(Map<String, List<String>> schemeListQuery) throws Exception {
-        mfToolsServiceLogger.info("Entering {} method with input amounts and input {}",
+        mfToolsServiceLogger.info("Entering {} method with input  {}",
                 Thread.currentThread().getStackTrace()[1].getMethodName(),schemeListQuery);
         Map<String,Object> schemePerformanceListResultMap = new HashMap<>();
         try{

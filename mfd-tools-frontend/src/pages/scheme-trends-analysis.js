@@ -11,10 +11,13 @@ export default function businessPlanning() {
   const { checkUserLoggedIn, logout } = useContext(AuthContext);
 
   const [fundHouse, setFundHouse] = useState("All");
-  const [schemeType, setSchemeType] = useState("Open Ended Schemes ( Equity Scheme - Large Cap Fund )");
+  const [schemeType, setSchemeType] = useState(
+    "Open Ended Schemes ( Equity Scheme - Large Cap Fund )"
+  );
   const [fromDate, setFromDate] = useState("2020-01-10");
   const [toDate, setToDate] = useState("2025-12-01");
   const [loading, setLoading] = useState(false);
+  const [errorAvailable, setErrorAvailable] = useState(false);
 
   const [resultSchemes, setResultSchemes] = useState([]);
 
@@ -144,26 +147,31 @@ export default function businessPlanning() {
   ];
 
   const filteredFundHouseOptions =
-  schemeType === "All"
-    ? fundHouseOptions.filter((opt) => opt !== "All")
-    : fundHouseOptions;
+    schemeType === "All"
+      ? fundHouseOptions.filter((opt) => opt !== "All")
+      : fundHouseOptions;
 
-const filteredSchemeTypeOptions =
-  fundHouse === "All"
-    ? schemeTypeOptions.filter((opt) => opt !== "All")
-    : schemeTypeOptions;
+  const filteredSchemeTypeOptions =
+    fundHouse === "All"
+      ? schemeTypeOptions.filter((opt) => opt !== "All")
+      : schemeTypeOptions;
 
   const triggerSchemeReturnPull = () => {
     if (new Date(toDate) > new Date(fromDate)) {
       let prevDate = [...fromDate.split("-")].reverse().join("/");
       let nextDate = [...toDate.split("-")].reverse().join("/");
       setLoading(true);
-        setDisplayResult("block");
+      setDisplayResult("block");
       mfToolsService
         .getSchemePointView(fundHouse, schemeType, prevDate, nextDate)
         .then((res) => {
           console.log(res.data);
-          setResultSchemes(res.data.navSensexReturnList);
+          if (res.data.error) {
+            setErrorAvailable(true)
+          } else {
+            setResultSchemes(res.data.navSensexReturnList);
+            setErrorAvailable(false);
+          }
           setLoading(false);
         })
         .catch((err) => {
@@ -185,21 +193,17 @@ const filteredSchemeTypeOptions =
     triggerSchemeReturnPull();
   };
 
+  useEffect(() => {
+    if (fundHouse === "All" && schemeType === "All") {
+      setSchemeType("Open Ended Schemes ( Equity Scheme - Large Cap Fund )");
+    }
+  }, [fundHouse]);
 
   useEffect(() => {
-  if (fundHouse === "All" && schemeType === "All") {
-    setSchemeType(
-      "Open Ended Schemes ( Equity Scheme - Large Cap Fund )"
-    );
-  }
-}, [fundHouse]);
-
-useEffect(() => {
-  if (schemeType === "All" && fundHouse === "All") {
-    setFundHouse("Open Ended Schemes ( Equity Scheme - Large Cap Fund )");
-  }
-}, [schemeType]);
-
+    if (schemeType === "All" && fundHouse === "All") {
+      setFundHouse("Open Ended Schemes ( Equity Scheme - Large Cap Fund )");
+    }
+  }, [schemeType]);
 
   useEffect(() => {
     checkUserLoggedIn();
@@ -308,6 +312,12 @@ useEffect(() => {
             <h5 className="mt-7 leading-none text-center text-xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
               Loading Scheme Data ...
             </h5>
+          ) : errorAvailable ? (
+            <>
+              <h5 className="mt-7 leading-none text-center text-xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
+                No Data Available
+              </h5>
+            </>
           ) : (
             <>
               <div

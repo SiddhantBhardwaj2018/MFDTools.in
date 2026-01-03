@@ -23,6 +23,7 @@ export default function businessPlanning() {
   const [fundHouse, setFundHouse] = useState("All");
   const [schemeType, setSchemeType] = useState("All");
   const [timePeriod, setTimePeriod] = useState("3");
+  const [errorAvailable, setErrorAvailable] = useState(false);
 
   const [resultSchemes, setResultSchemes] = useState([]);
   const [totalSchemeCount, setTotalSchemeCount] = useState(0);
@@ -167,49 +168,54 @@ export default function businessPlanning() {
     mfToolsService
       .getSchemeReturnsView(fundHouse, schemeType, timePeriod, page)
       .then((res) => {
-        setResultSchemes(res.data.schemeList);
-        setTotalSchemeCount(res.data.totalSchemeCount);
-        setDisplayResult("block");
-        if (timePeriod == "1") {
-          setHightlightReturnColor({
-            1: true,
-            3: false,
-            5: false,
-            10: false,
-            inception: false,
-          });
-        } else if (timePeriod == "3") {
-          setHightlightReturnColor({
-            1: false,
-            3: true,
-            5: false,
-            10: false,
-            inception: false,
-          });
-        } else if (timePeriod == "5") {
-          setHightlightReturnColor({
-            1: true,
-            3: false,
-            5: true,
-            10: false,
-            inception: false,
-          });
-        } else if (timePeriod == "10") {
-          setHightlightReturnColor({
-            1: false,
-            3: false,
-            5: false,
-            10: true,
-            inception: false,
-          });
-        } else if (timePeriod == "10") {
-          setHightlightReturnColor({
-            1: false,
-            3: false,
-            5: false,
-            10: false,
-            inception: true,
-          });
+        if (res.data.schemeList.length > 0) {
+          setResultSchemes(res.data.schemeList);
+          setTotalSchemeCount(res.data.totalSchemeCount);
+          setDisplayResult("block");
+          if (timePeriod == "1") {
+            setHightlightReturnColor({
+              1: true,
+              3: false,
+              5: false,
+              10: false,
+              inception: false,
+            });
+          } else if (timePeriod == "3") {
+            setHightlightReturnColor({
+              1: false,
+              3: true,
+              5: false,
+              10: false,
+              inception: false,
+            });
+          } else if (timePeriod == "5") {
+            setHightlightReturnColor({
+              1: true,
+              3: false,
+              5: true,
+              10: false,
+              inception: false,
+            });
+          } else if (timePeriod == "10") {
+            setHightlightReturnColor({
+              1: false,
+              3: false,
+              5: false,
+              10: true,
+              inception: false,
+            });
+          } else if (timePeriod == "10") {
+            setHightlightReturnColor({
+              1: false,
+              3: false,
+              5: false,
+              10: false,
+              inception: true,
+            });
+          }
+          setErrorAvailable(false);
+        } else {
+          setErrorAvailable(true);
         }
       })
       .catch((err) => {
@@ -346,113 +352,158 @@ export default function businessPlanning() {
           </div>
         </form>
         <div id="dataTable" className="mt-7" style={{ display: displayResult }}>
-          <div
-            id="resultHeader"
-            style={{ display: "flex", justifyContent: "center" }}
-          >
-            <h5 className="mt-7 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Scheme Return Analysis Results
-            </h5>
-          </div>
-          <div className="relative overflow-x-auto mt-5">
-            <table className="w-full text-sm text-left text-gray-500 border-2 border-gray-800 border-collapse">
-              <thead
-                className="text-xs uppercase"
-                style={{ background: "#063599" }}
+          {errorAvailable ? (
+            <>
+              <h5 className="mt-7 leading-none text-center text-xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
+                No Data Available
+              </h5>
+            </>
+          ) : (
+            <>
+              <div
+                id="resultHeader"
+                style={{ display: "flex", justifyContent: "center" }}
               >
-                <tr>
-                  {[
-                    "Scheme Name",
-                    "1 Year (%)",
-                    "3 Years (%)",
-                    "5 Years (%)",
-                    "10 Years (%)",
-                    "Inception (%)",
-                  ].map((head) => (
-                    <th key={head} className="text-white text-center px-6 py-3">
-                      {head}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
+                <h5 className="mt-7 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
+                  Scheme Return Analysis Results
+                </h5>
+              </div>
+              <div className="relative overflow-x-auto mt-5">
+                <table className="w-full text-sm text-left text-gray-500 border-2 border-gray-800 border-collapse">
+                  <thead
+                    className="text-xs uppercase"
+                    style={{ background: "#063599" }}
+                  >
+                    <tr>
+                      {[
+                        "Scheme Name",
+                        "1 Year (%)",
+                        "3 Years (%)",
+                        "5 Years (%)",
+                        "10 Years (%)",
+                        "Inception (%)",
+                      ].map((head) => (
+                        <th
+                          key={head}
+                          className="text-white text-center px-6 py-3"
+                        >
+                          {head}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
 
-              <tbody>
-                {resultSchemes.map((scheme, idx) => (
-                  <tr key={idx} className="bg-white">
-                    <th className="px-6 py-4 font-bold text-gray-900 border-2 border-gray-800 text-center whitespace-normal">
-                      {scheme.schemeName}
-                    </th>
+                  <tbody>
+                    {resultSchemes.map((scheme, idx) => (
+                      <tr key={idx} className="bg-white">
+                        <th className="px-6 py-4 font-bold text-gray-900 border-2 border-gray-800 text-center whitespace-normal">
+                          {scheme.schemeName}
+                        </th>
 
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["1"] ? `bg-blue-200` : `` }`}>
-                      {scheme.oneYearReturn != null ? scheme.oneYearReturn : "-"}
-                    </td>
-
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["3"] ? `bg-blue-200` : `` }`}>
-                      {scheme.threeYearReturn != null ? scheme.threeYearReturn : "-"}
-                    </td>
-
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["5"] ? `bg-blue-200` : `` }`}>
-                      {scheme.fiveYearReturn != null ? scheme.fiveYearReturn : "-"}
-                    </td>
-
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["10"] ? `bg-blue-200` : `` }`}>
-                      {scheme.tenYearReturn != null ? scheme.tenYearReturn : "-"}
-                    </td>
-
-                    <td className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${highlightReturnColor["inception"] ? `bg-blue-200` : `` }`}>
-                      {scheme.inceptionReturn != null ? scheme.inceptionReturn : "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Pagination */}
-            <nav className="mt-7 mb-10">
-              <ul className="flex justify-center">
-                {startIdx > 0 && (
-                  <li>
-                    <button
-                      onClick={onClickPrevBtn}
-                      className="px-3 py-1 border"
-                    >
-                      Prev
-                    </button>
-                  </li>
-                )}
-
-                {(() => {
-                  let buttons = [];
-                  for (let i = startIdx + 1; i <= endIdx; i++) {
-                    buttons.push(
-                      <li key={i}>
-                        <button
-                          onClick={() => onClickPage(i)}
-                          className={`px-3 py-1 border ${
-                            i === currentPage ? "bg-blue-200" : ""
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                            highlightReturnColor["1"] ? `bg-blue-200` : ``
                           }`}
                         >
-                          {i}
+                          {scheme.oneYearReturn != null
+                            ? scheme.oneYearReturn
+                            : "-"}
+                        </td>
+
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                            highlightReturnColor["3"] ? `bg-blue-200` : ``
+                          }`}
+                        >
+                          {scheme.threeYearReturn != null
+                            ? scheme.threeYearReturn
+                            : "-"}
+                        </td>
+
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                            highlightReturnColor["5"] ? `bg-blue-200` : ``
+                          }`}
+                        >
+                          {scheme.fiveYearReturn != null
+                            ? scheme.fiveYearReturn
+                            : "-"}
+                        </td>
+
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                            highlightReturnColor["10"] ? `bg-blue-200` : ``
+                          }`}
+                        >
+                          {scheme.tenYearReturn != null
+                            ? scheme.tenYearReturn
+                            : "-"}
+                        </td>
+
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4 ${
+                            highlightReturnColor["inception"]
+                              ? `bg-blue-200`
+                              : ``
+                          }`}
+                        >
+                          {scheme.inceptionReturn != null
+                            ? scheme.inceptionReturn
+                            : "-"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Pagination */}
+                <nav className="mt-7 mb-10">
+                  <ul className="flex justify-center">
+                    {startIdx > 0 && (
+                      <li>
+                        <button
+                          onClick={onClickPrevBtn}
+                          className="px-3 py-1 border"
+                        >
+                          Prev
                         </button>
                       </li>
-                    );
-                  }
-                  return buttons;
-                })()}
+                    )}
 
-                {endIdx < totalPages && (
-                  <li>
-                    <button
-                      onClick={onClickNextBtn}
-                      className="px-3 py-1 border"
-                    >
-                      Next
-                    </button>
-                  </li>
-                )}
-              </ul>
-            </nav>
-          </div>
+                    {(() => {
+                      let buttons = [];
+                      for (let i = startIdx + 1; i <= endIdx; i++) {
+                        buttons.push(
+                          <li key={i}>
+                            <button
+                              onClick={() => onClickPage(i)}
+                              className={`px-3 py-1 border ${
+                                i === currentPage ? "bg-blue-200" : ""
+                              }`}
+                            >
+                              {i}
+                            </button>
+                          </li>
+                        );
+                      }
+                      return buttons;
+                    })()}
+
+                    {endIdx < totalPages && (
+                      <li>
+                        <button
+                          onClick={onClickNextBtn}
+                          className="px-3 py-1 border"
+                        >
+                          Next
+                        </button>
+                      </li>
+                    )}
+                  </ul>
+                </nav>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

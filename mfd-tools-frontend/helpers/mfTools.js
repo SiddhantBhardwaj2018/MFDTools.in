@@ -405,12 +405,11 @@ const getSchemeList = (fundHouse, schemeType) => {
   });
 };
 
-const getSchemePerformanceList = (fundHouse, schemeType) => {
+const getSchemePerformanceList = (schemeList) => {
   let token = localStorage.getItem("token");
   return axios.post(`${NEXT_URL}/api/mfTools/getSchemePerformanceList`, {
     token,
-    fundHouse,
-    schemeType,
+    schemeList
   });
 };
 
@@ -495,7 +494,7 @@ const getNavSensexPerformance = (fundHouse, schemeType) => {
 const getWeeklyBestAndWorstMFSchemePerformers = () => {
   let token = localStorage.getItem("token");
   return axios.post(
-    `${NEXT_URL}/api/mfTools/getDecliningNavSensexPerformance`,
+    `${NEXT_URL}/api/mfTools/getWeeklyBestAndWorstMFSchemePerformers`,
     {
       token,
     }

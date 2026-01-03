@@ -12,6 +12,7 @@ export default function businessPlanning() {
 
   const [fundHouse, setFundHouse] = useState("All");
   const [schemeType, setSchemeType] = useState("All");
+  const [errorAvailable, setErrorAvailable] = useState(false);
 
   const [resultSchemes, setResultSchemes] = useState([]);
 
@@ -140,13 +141,17 @@ export default function businessPlanning() {
     "Interval Fund Schemes ( Growth )",
   ];
 
-
   const triggerMostDecliningSchemePull = () => {
     mfToolsService
       .getDecliningNavSensexPerformance(fundHouse, schemeType)
       .then((res) => {
-        setResultSchemes(res.data.navPerformanceList);
-        setDisplayResult("block");
+        if (res.data.navPerformanceList.length > 0) {
+          setResultSchemes(res.data.navPerformanceList);
+          setDisplayResult("block");
+          setErrorAvailable(false);
+        } else {
+          setErrorAvailable(true);
+        }
       })
       .catch((err) => {
         if (err.status === 401) {
@@ -228,78 +233,95 @@ export default function businessPlanning() {
             </button>
           </div>
         </form>
-        <div id="dataTable" className="mt-7 mb-10" style={{ display: displayResult }}>
-          <div
-            id="resultHeader"
-            style={{ display: "flex", justifyContent: "center" }}
-          >
-            <h5 className="mt-7 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Most Declining Scheme Analysis Results
-            </h5>
-          </div>
-          <div className="relative overflow-x-auto mt-5">
-            <table className="w-full text-sm text-left text-gray-500 border-2 border-gray-800 border-collapse">
-              <thead
-                className="text-xs uppercase"
-                style={{ background: "#063599" }}
+        <div
+          id="dataTable"
+          className="mt-7 mb-10"
+          style={{ display: displayResult }}
+        >
+          {errorAvailable ? (
+            <>
+              <h5 className="mt-7 leading-none text-center text-xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
+                No Data Available
+              </h5>
+            </>
+          ) : (
+            <>
+              <div
+                id="resultHeader"
+                style={{ display: "flex", justifyContent: "center" }}
               >
-                <tr>
-                  {[
-                    "SCHEME NAME",
-                    "DATE OF HIGHEST NAV",
-                    "SENSEX",
-                    "HIGHEST NAV",
-                    "CURRENT NAV",
-                    "ABSOLUTE CHANGE (%)",
-                  ].map((head) => (
-                    <th key={head} className="text-white text-center px-6 py-3">
-                      {head}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
+                <h5 className="mt-7 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
+                  Most Declining Scheme Analysis Results
+                </h5>
+              </div>
+              <div className="relative overflow-x-auto mt-5">
+                <table className="w-full text-sm text-left text-gray-500 border-2 border-gray-800 border-collapse">
+                  <thead
+                    className="text-xs uppercase"
+                    style={{ background: "#063599" }}
+                  >
+                    <tr>
+                      {[
+                        "SCHEME NAME",
+                        "DATE OF HIGHEST NAV",
+                        "SENSEX",
+                        "HIGHEST NAV",
+                        "CURRENT NAV",
+                        "ABSOLUTE CHANGE (%)",
+                      ].map((head) => (
+                        <th
+                          key={head}
+                          className="text-white text-center px-6 py-3"
+                        >
+                          {head}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
 
-              <tbody>
-                {resultSchemes.map((scheme, idx) => (
-                  <tr key={idx} className="bg-white">
-                    <th className="px-6 py-4 font-bold text-gray-900 border-2 border-gray-800 text-center whitespace-normal">
-                      {scheme.schemeName}
-                    </th>
+                  <tbody>
+                    {resultSchemes.map((scheme, idx) => (
+                      <tr key={idx} className="bg-white">
+                        <th className="px-6 py-4 font-bold text-gray-900 border-2 border-gray-800 text-center whitespace-normal">
+                          {scheme.schemeName}
+                        </th>
 
-                    <td
-                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                    >
-                      {scheme.highestNAVDate}
-                    </td>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                        >
+                          {scheme.highestNAVDate}
+                        </td>
 
-                    <td
-                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                    >
-                      {scheme.sensex}
-                    </td>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                        >
+                          {scheme.sensex}
+                        </td>
 
-                    <td
-                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                    >
-                      {scheme.highestNAV}
-                    </td>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                        >
+                          {scheme.highestNAV}
+                        </td>
 
-                    <td
-                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                    >
-                      {scheme.currentNAV}
-                    </td>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                        >
+                          {scheme.currentNAV}
+                        </td>
 
-                    <td
-                      className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                    >
-                      {scheme.absoluteChange}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        <td
+                          className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                        >
+                          {scheme.absoluteChange}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

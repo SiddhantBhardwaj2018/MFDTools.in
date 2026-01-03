@@ -11,8 +11,8 @@ const getSchemePerformanceList = async (req, res) => {
 
   // checking if is a post request
   if (req.method === "POST") {
-    let { token, fundHouse, schemeType } = req.body;
-
+    let { token, schemeList} = req.body;
+    console.log(schemeList);
     // Making a post request to hit our backend api-endpoint
     const apiRes = await fetch(`${API_URL}/api/mfTools/getSchemePerformanceList`, {
       method: "POST",
@@ -21,7 +21,7 @@ const getSchemePerformanceList = async (req, res) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        fundHouse, schemeType
+        schemeList
       }),
     });
 

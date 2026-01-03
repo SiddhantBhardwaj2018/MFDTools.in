@@ -13,6 +13,7 @@ export default function businessPlanning() {
   const [fundHouse, setFundHouse] = useState("ICICI Prudential Mutual Fund");
   const [schemeType, setSchemeType] = useState("All");
   const [loading, setLoading] = useState(false);
+  const [errorAvailable, setErrorAvailable] = useState(false);
 
   const [resultSchemes, setResultSchemes] = useState([]);
 
@@ -145,11 +146,16 @@ export default function businessPlanning() {
     mfToolsService
       .getNavSensexPerformance(fundHouse, schemeType)
       .then((res) => {
-        setResultSchemes(res.data.navSensexPerformanceList);
-        setDisplayResult("block");
-        setTimeout(() => {
-          setLoading(false);
-        }, 2500);
+        if (res.data.navSensexPerformanceList.length > 0) {
+          setResultSchemes(res.data.navSensexPerformanceList);
+          setDisplayResult("block");
+          setErrorAvailable(false);
+          setTimeout(() => {
+            setLoading(false);
+          }, 2500);
+        } else {
+          setErrorAvailable(true);
+        }
       })
       .catch((err) => {
         if (err.status === 401) {
@@ -237,104 +243,118 @@ export default function businessPlanning() {
           className="mt-7 mb-10"
           style={{ display: displayResult }}
         >
-          <div
-            id="resultHeader"
-            style={{ display: "flex", justifyContent: "center" }}
-          >
-            <h5 className="mt-7 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-              Live Scheme NAV Tracker Analysis Results
-            </h5>
-          </div>
-          <div className="relative overflow-x-auto mt-5">
-            {loading ? (
+          {errorAvailable ? (
+            <>
               <h5 className="mt-7 leading-none text-center text-xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
-                Loading Scheme Data
+                No Data Available
               </h5>
-            ) : (
-              <table className="w-full text-sm text-left text-gray-500 border-2 border-gray-800 border-collapse">
-                <thead
-                  className="text-xs uppercase"
-                  style={{ background: "#063599" }}
-                >
-                  <tr>
-                    {[
-                      "SCHEME NAME",
-                      "LATEST NAV (₹)",
-                      "DATE OF LATEST NAV",
-                      "HIGHEST NAV (₹)",
-                      "DATE OF HIGHEST NAV",
-                      "SENSEX CLOSING ON HIGHEST NAV DATE",
-                      "LOWEST NAV (₹)",
-                      "DATE  OF LOWEST NAV",
-                      "SENSEX CLOSING ON LOWEST NAV DATE",
-                    ].map((head) => (
-                      <th
-                        key={head}
-                        className="text-white text-center px-6 py-3"
-                      >
-                        {head}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
+            </>
+          ) : (
+            <>
+              <div
+                id="resultHeader"
+                style={{ display: "flex", justifyContent: "center" }}
+              >
+                <h5 className="mt-7 leading-none text-center text-3xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
+                  Live Scheme NAV Tracker Analysis Results
+                </h5>
+              </div>
+              <div className="relative overflow-x-auto mt-5">
+                {loading ? (
+                  <h5 className="mt-7 leading-none text-center text-xl mb-4 font-extrabold text-gray-900 dark:text-white pb-1">
+                    Loading Scheme Data
+                  </h5>
+                ) : (
+                  <table className="w-full text-sm text-left text-gray-500 border-2 border-gray-800 border-collapse">
+                    <thead
+                      className="text-xs uppercase"
+                      style={{ background: "#063599" }}
+                    >
+                      <tr>
+                        {[
+                          "SCHEME NAME",
+                          "LATEST NAV (₹)",
+                          "DATE OF LATEST NAV",
+                          "HIGHEST NAV (₹)",
+                          "DATE OF HIGHEST NAV",
+                          "SENSEX CLOSING ON HIGHEST NAV DATE",
+                          "LOWEST NAV (₹)",
+                          "DATE  OF LOWEST NAV",
+                          "SENSEX CLOSING ON LOWEST NAV DATE",
+                        ].map((head) => (
+                          <th
+                            key={head}
+                            className="text-white text-center px-6 py-3"
+                          >
+                            {head}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
 
-                <tbody>
-                  {resultSchemes.map((scheme, idx) => (
-                    <tr key={idx} className="bg-white">
-                      <th className="px-6 py-4 font-bold text-gray-900 border-2 border-gray-800 text-center whitespace-normal">
-                        {scheme.schemeName}
-                      </th>
+                    <tbody>
+                      {resultSchemes.map((scheme, idx) => (
+                        <tr key={idx} className="bg-white">
+                          <th className="px-6 py-4 font-bold text-gray-900 border-2 border-gray-800 text-center whitespace-normal">
+                            {scheme.schemeName}
+                          </th>
 
-                      <td
-                        className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                      >
-                        {scheme.latestNav}
-                      </td>
+                          <td
+                            className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                          >
+                            {scheme.latestNav}
+                          </td>
 
-                      <td
-                        className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                      >
-                        {scheme.latestNavDate}
-                      </td>
+                          <td
+                            className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                          >
+                            {scheme.latestNavDate}
+                          </td>
 
-                      <td
-                        className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                      >
-                        {inputCalculatorRules.formatINR(scheme.maxNav)}
-                      </td>
+                          <td
+                            className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                          >
+                            {inputCalculatorRules.formatINR(scheme.maxNav)}
+                          </td>
 
-                      <td
-                        className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                      >
-                        {scheme.maxNavDate}
-                      </td>
+                          <td
+                            className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                          >
+                            {scheme.maxNavDate}
+                          </td>
 
-                      <td
-                        className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                      >
-                        {inputCalculatorRules.formatSensex(scheme.maxNavSensexClosing)}
-                      </td>
-                      <td
-                        className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                      >
-                        {inputCalculatorRules.formatINR(scheme.minNav)}
-                      </td>
-                      <td
-                        className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                      >
-                        {scheme.minNavDate}
-                      </td>
-                      <td
-                        className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
-                      >
-                        {inputCalculatorRules.formatSensex(scheme.minNavSensexClosing)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                          <td
+                            className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                          >
+                            {inputCalculatorRules.formatSensex(
+                              scheme.maxNavSensexClosing
+                            )}
+                          </td>
+                          <td
+                            className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                          >
+                            {inputCalculatorRules.formatINR(scheme.minNav)}
+                          </td>
+                          <td
+                            className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                          >
+                            {scheme.minNavDate}
+                          </td>
+                          <td
+                            className={`font-bold text-center border-2 border-gray-800 px-6 py-4`}
+                          >
+                            {inputCalculatorRules.formatSensex(
+                              scheme.minNavSensexClosing
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
