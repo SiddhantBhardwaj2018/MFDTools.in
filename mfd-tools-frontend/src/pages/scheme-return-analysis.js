@@ -190,7 +190,7 @@ export default function businessPlanning() {
             });
           } else if (timePeriod == "5") {
             setHightlightReturnColor({
-              1: true,
+              1: false,
               3: false,
               5: true,
               10: false,

@@ -640,7 +640,7 @@ public class MFToolsController {
 
     @PreAuthorize("hasAuthority('ROLE_BASIC_USER')")
     @PostMapping("/getSchemeListForSWP")
-    public Map<String, Object> getSchemeListForSWP(Map<String, String> swpListMap) throws Exception {
+    public Map<String, Object> getSchemeListForSWP(@RequestBody Map<String, String> swpListMap) throws Exception {
         mfToolsControllerLogger.info("Entering {} method with swpListMap {}", Thread.currentThread().getStackTrace()[2].getMethodName(),
                 swpListMap);
         Map<String, Object> schemeSWPList = new HashMap<>();
@@ -657,7 +657,7 @@ public class MFToolsController {
 
     @PreAuthorize("hasAuthority('ROLE_BASIC_USER')")
     @PostMapping("/getSchemeListForSIP")
-    public Map<String, Object> getSchemeListForSIP(Map<String, String> sipListMap) throws Exception {
+    public Map<String, Object> getSchemeListForSIP(@RequestBody Map<String, String> sipListMap) throws Exception {
         mfToolsControllerLogger.info("Entering {} method with sipListMap {}", Thread.currentThread().getStackTrace()[2].getMethodName(),
                 sipListMap);
         Map<String, Object> schemeSIPList = new HashMap<>();

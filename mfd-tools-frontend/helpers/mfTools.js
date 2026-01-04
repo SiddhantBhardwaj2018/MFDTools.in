@@ -459,7 +459,7 @@ const calculateSWP = (
 
 const calculateSIP = (investDate, lumpsum, schemeName) => {
   let token = localStorage.getItem("token");
-  return axios.post(`${NEXT_URL}/api/mfTools/calculateSWP`, {
+  return axios.post(`${NEXT_URL}/api/mfTools/calculateSIP`, {
     token,
     investDate,
     lumpsum,

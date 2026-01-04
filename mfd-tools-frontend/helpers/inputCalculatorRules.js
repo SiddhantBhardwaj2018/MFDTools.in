@@ -36,9 +36,22 @@ const formatSensex = (num) => {
 
 const numericRegex = /^[\d,]*\.?\d*$/;
 
+const formatDateToWords = (dateStr) => {
+  const date = new Date(dateStr);
+
+  const options = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  };
+
+  return date.toLocaleDateString('en-GB', options);
+}
+
 export default {
     modifyNumberValueForLocaleRepresentation,
     numericRegex,
     formatSensex,
-    formatINR
+    formatINR,
+    formatDateToWords
 }
